@@ -76,26 +76,50 @@ function extractUserInfo(messages: ChatMessage[]): UserInfo {
 function qualifyLead(messages: ChatMessage[], userInfo: UserInfo): LeadQualification {
   const conversationText = messages.map(m => m.content).join(" ").toLowerCase();
   
+  // CRITICAL/URGENT indicators (immediate hot lead)
+  const criticalIndicators = [
+    "broke down", "broken", "blew up", "not working", "won't start", "stopped working",
+    "emergency", "need help", "problem", "issue", "repair", "fix", "damaged", "failed"
+  ];
+  
   // Hot lead indicators
   const hotIndicators = [
     "need service", "schedule", "appointment", "when can you", "how much",
     "quote", "pricing", "available", "book", "asap", "urgent", "soon",
-    "this week", "interested in", "ready to", "want to get"
+    "this week", "interested in", "ready to", "want to get", "service"
+  ];
+  
+  // Confirmation words (user agreeing to service)
+  const confirmationIndicators = [
+    "yes", "yeah", "yep", "sure", "ok", "okay", "definitely", 
+    "absolutely", "please", "sounds good", "let's do it"
   ];
   
   // Warm lead indicators
   const warmIndicators = [
     "tell me more", "what do you", "looking for", "considering",
     "thinking about", "might need", "planning", "next season",
-    "in the future", "eventually"
+    "in the future", "eventually", "curious about"
   ];
   
   // Count indicators
+  let criticalCount = 0;
   let hotCount = 0;
+  let confirmationCount = 0;
   let warmCount = 0;
+  
+  criticalIndicators.forEach(indicator => {
+    if (conversationText.includes(indicator)) criticalCount++;
+  });
   
   hotIndicators.forEach(indicator => {
     if (conversationText.includes(indicator)) hotCount++;
+  });
+  
+  confirmationIndicators.forEach(indicator => {
+    // Check for standalone confirmations (not part of longer words)
+    const regex = new RegExp(`\\b${indicator}\\b`, 'gi');
+    if (regex.test(conversationText)) confirmationCount++;
   });
   
   warmIndicators.forEach(indicator => {
@@ -111,19 +135,44 @@ function qualifyLead(messages: ChatMessage[], userInfo: UserInfo): LeadQualifica
   let notes = "";
   let requiresFollowUp = false;
   
-  if (hotCount >= 2 && hasContactInfo) {
+  // HOT LEAD: Critical issues (engine problems, breakdowns, etc.) are ALWAYS hot
+  if (criticalCount >= 1) {
+    score = "hot";
+    notes = `🔥 URGENT: Customer has critical equipment issue requiring immediate attention. ${hasContactInfo ? 'Contact info collected.' : '⚠️ MISSING CONTACT INFO!'}`;
+    requiresFollowUp = true;
+  }
+  // HOT LEAD: User confirmed interest (said "yes" after service discussion)
+  else if (confirmationCount >= 1 && hotCount >= 1) {
+    score = "hot";
+    notes = `🔥 Customer confirmed interest in service. ${hasContactInfo ? 'Contact info collected.' : '⚠️ MISSING CONTACT INFO!'}`;
+    requiresFollowUp = true;
+  }
+  // HOT LEAD: Multiple hot indicators with contact info
+  else if (hotCount >= 2 && hasContactInfo) {
     score = "hot";
     notes = `Customer expressing immediate interest with ${hotCount} strong buying signals. Has provided contact information.`;
     requiresFollowUp = true;
-  } else if ((hotCount >= 1 && hasContactInfo) || (warmCount >= 2 && hasContactInfo)) {
+  }
+  // WARM LEAD: Service interest with contact info
+  else if (hotCount >= 1 && hasContactInfo) {
     score = "warm";
-    notes = `Customer showing interest with ${hotCount + warmCount} indicators. Has provided ${hasName ? 'name and ' : ''}contact details.`;
+    notes = `Customer showing service interest. Has provided ${hasName ? 'name and ' : ''}contact details.`;
     requiresFollowUp = true;
-  } else if (warmCount >= 1 || hotCount >= 1) {
+  }
+  // WARM LEAD: Multiple warm indicators with contact info
+  else if (warmCount >= 2 && hasContactInfo) {
     score = "warm";
-    notes = `Customer asking relevant questions but hasn't provided contact info yet.`;
+    notes = `Customer researching services. Has provided ${hasName ? 'name and ' : ''}contact details.`;
+    requiresFollowUp = true;
+  }
+  // WARM LEAD: Showing interest but no contact info yet
+  else if (warmCount >= 1 || hotCount >= 1 || criticalCount >= 1) {
+    score = "warm";
+    notes = `Customer asking relevant questions. ⚠️ Contact info not collected yet - follow up in conversation!`;
     requiresFollowUp = false;
-  } else {
+  }
+  // COLD LEAD: General browsing
+  else {
     score = "cold";
     notes = "General inquiry or casual browsing.";
     requiresFollowUp = false;
@@ -336,25 +385,48 @@ serve(async (req) => {
     // Enhanced system prompt for lead qualification
     const systemPrompt = `You are an intelligent, knowledgeable, and engaging AI assistant for J.D.F. Performance Marine, a premier high-performance marine service shop in New Windsor, NY on the beautiful Hudson River.
 
-CRITICAL LEAD QUALIFICATION MISSION:
-Your primary goal is to build genuine rapport, qualify leads naturally, and collect contact information WITHOUT being pushy. You are a skilled conversationalist who makes people WANT to share their information.
+🚨 CRITICAL LEAD QUALIFICATION MISSION:
+Your PRIMARY GOAL is to collect contact information (email AND phone) from anyone showing service interest. Every potential customer MUST be captured as a lead.
 
-INFORMATION GATHERING STRATEGY (Natural & Conversational):
-1. FIRST INTERACTION: Introduce yourself warmly and ask who you're speaking with
-   - Example: "Hi there! I'm the AI assistant for J.D.F. Performance Marine. Who do I have the pleasure of helping today?"
-   - Be genuinely interested and friendly
+INFORMATION GATHERING PROTOCOL (MANDATORY SEQUENCE):
 
-2. ONCE YOU HAVE THEIR NAME: Use it naturally in conversation to build rapport
-   - Example: "Great to meet you, [Name]! So what brings you here today?"
+1. FIRST MESSAGE: Warmly ask for their name
+   - "Hi there! I'm the AI assistant for J.D.F. Performance Marine. Who do I have the pleasure of helping today?"
 
-3. WHEN THE CONVERSATION SHOWS INTEREST: Naturally offer to send information
-   - Example: "That's perfect for what we offer! I'd love to send you some specific details. What's the best email to reach you at?"
-   - Or: "Let me get you a personalized quote. Where should I send it?"
+2. SECOND MESSAGE: After they share their name, use it and ask about their needs
+   - "Great to meet you, [Name]! What can I help you with today?"
 
-4. FOR HOT LEADS: Suggest a callback or appointment
-   - Example: "This sounds time-sensitive! Would you like me to have our service manager give you a call? What's the best number to reach you?"
+3. WHEN THEY EXPRESS ANY SERVICE NEED: Immediately acknowledge and START collecting contact info
+   - For repairs/urgent issues: "I'm sorry to hear that, [Name]. Let me make sure our team can reach out to you right away. What's the best phone number to contact you at?"
+   - For quotes/appointments: "Perfect! I'll have our service manager reach out to you directly with availability and pricing. What's the best number to call you at?"
+   - For general service inquiries: "Great! Let me have someone from our team follow up with you. What's your phone number?"
 
-5. VARY YOUR APPROACH: Never use the exact same phrasing twice. Be genuinely conversational.
+4. AFTER GETTING PHONE: Immediately ask for email (same message is fine)
+   - "And what's your email address so we can send you confirmation and details?"
+   - Or smoothly: "Perfect! And your email address?"
+
+5. AFTER COLLECTING BOTH: Confirm and set expectations
+   - "Excellent! We have [Name] at [phone] and [email]. Our team will reach out within 24 hours (or sooner for urgent matters). Is there anything else I can help you understand in the meantime?"
+
+6. IF THEY HESITATE OR REFUSE: Emphasize the benefit, don't give up on first try
+   - "I totally understand! The reason I ask is so our experienced technicians can give you a personalized quote and timeline. We get back to people within a few hours typically. Would that work for you?"
+
+🎯 LEAD PRIORITY RULES:
+- Engine problems, breakdowns, urgent repairs = HOT LEAD (collect info IMMEDIATELY)
+- Service requests, appointments, quotes = HOT LEAD (collect info IMMEDIATELY)  
+- "Interested in", "looking for", "considering" = WARM LEAD (collect info before ending conversation)
+- General questions = Still try to collect info if conversation goes beyond 3 messages
+
+⚠️ NEVER EVER:
+- Don't just tell them to "call us" or "email us" without collecting THEIR contact info first
+- Don't end the conversation if they've shown interest but you don't have phone AND email
+- Don't be pushy, but be persistent and helpful
+
+💡 FRAMING TIPS:
+- Position contact info collection as "so we can help you faster"
+- Make it about THEIR convenience ("so you don't have to wait on hold")
+- Emphasize quick response times ("within a few hours" or "same day")
+- For urgent issues, emphasize "our team will call you right away"
 
 COMPANY EXPERTISE:
 - 30+ years of specialized marine mechanical expertise
@@ -407,7 +479,7 @@ CONVERSATION STYLE:
 - VARY your responses - use different phrasings, expressions, and structures
 - Write like a real person having a conversation, not a robot
 - Use occasional contractions, natural language, and varied sentence structures
-- Always encourage them to call for detailed quotes or appointments
+- COLLECT CONTACT INFO before suggesting they call us - we need to be able to call THEM
 
 LEAD QUALIFICATION SIGNALS (Identify but don't be pushy):
 HOT LEADS: Immediate need, timeline mentioned, asking for quotes/pricing, ready to schedule
@@ -509,6 +581,40 @@ Remember: You represent a premium, expert service with decades of experience. Be
     // Qualify the lead
     const leadQualification = qualifyLead(allMessages, userInfo);
     
+    // SMART CONTACT INFO PROMPTING: Check if we should be collecting contact info
+    const hasName = !!userInfo.name;
+    const hasEmail = !!userInfo.email;
+    const hasPhone = !!userInfo.phone;
+    const messageCount = historyArray.length + 1; // Number of user messages
+    
+    // Check if user confirmed interest (said yes, ok, sure, etc.)
+    const lastUserMessage = message.toLowerCase().trim();
+    const confirmationWords = ['yes', 'yeah', 'yep', 'sure', 'ok', 'okay', 'definitely', 'absolutely', 'please', 'interested'];
+    const userConfirmedInterest = confirmationWords.some(word => lastUserMessage === word || lastUserMessage.startsWith(word + ' ') || lastUserMessage.endsWith(' ' + word));
+    
+    // Override AI response if they confirmed interest but we don't have contact info
+    if (userConfirmedInterest && hasName && (!hasPhone || !hasEmail)) {
+      if (!hasPhone && !hasEmail) {
+        aiResponse = `Perfect! Let me have our service manager reach out to you directly with availability and pricing. What's the best phone number to reach you at?`;
+      } else if (!hasEmail) {
+        aiResponse = `Great! And what's your email address so we can send you confirmation and details?`;
+      } else if (!hasPhone) {
+        aiResponse = `Excellent! And what's the best phone number to contact you at?`;
+      }
+    }
+    // If hot/warm lead but missing contact info after several messages, prompt
+    else if ((leadQualification.score === 'hot' || leadQualification.score === 'warm') && 
+             hasName && messageCount >= 3 && (!hasPhone || !hasEmail)) {
+      if (!hasPhone && !hasEmail) {
+        // Add contact request to end of response
+        aiResponse += `\n\nSo I can have our team follow up with you directly, what's the best phone number to reach you?`;
+      } else if (!hasEmail) {
+        aiResponse += ` And what's your email address for confirmation?`;
+      } else if (!hasPhone) {
+        aiResponse += ` What's the best number to call you at?`;
+      }
+    }
+    
     console.log("Lead qualification:", leadQualification);
     console.log("User info extracted:", userInfo);
 
@@ -554,9 +660,11 @@ Remember: You represent a premium, expert service with decades of experience. Be
         }
 
         // Send notification for hot/warm leads that require follow-up
-        if (conversationId && leadQualification.requiresFollowUp && 
-            (userInfo.email || userInfo.phone)) {
-          
+        // For HOT leads, send notification even without full contact info (to alert about missed opportunity)
+        const shouldNotify = conversationId && leadQualification.requiresFollowUp && 
+          (leadQualification.score === 'hot' || (userInfo.email || userInfo.phone));
+        
+        if (shouldNotify) {
           // Check if notification already sent
           const { data: existingNotification } = await supabase
             .from('lead_notifications')
