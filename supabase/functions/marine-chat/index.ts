@@ -200,7 +200,8 @@ async function sendLeadNotification(
     .join('\n\n');
   
   const urgencyEmoji = leadQual.score === 'hot' ? '🔥🔥🔥' : '⚠️';
-  const subject = `${urgencyEmoji} ${leadQual.score.toUpperCase()} Lead Alert - ${userInfo.name || 'New Customer'}`;
+  const timeFrame = leadQual.score === 'hot' ? '⏰ RESPOND WITHIN 2 HOURS' : 'Follow up today';
+  const subject = `${urgencyEmoji} ${leadQual.score.toUpperCase()} Lead - ${userInfo.name || 'New Customer'} - ${timeFrame}`;
   
   const emailBody = `
 <!DOCTYPE html>
@@ -255,9 +256,9 @@ async function sendLeadNotification(
     </div>
     
     ${leadQual.requiresFollowUp ? `
-      <div style="text-align: center; margin: 30px 0;">
-        <p style="font-size: 18px; font-weight: bold; color: #dc2626;">⏰ Action Required</p>
-        <p>Contact this lead within 1 hour for best conversion rate!</p>
+      <div style="text-align: center; margin: 30px 0; background: ${leadQual.score === 'hot' ? '#fee2e2' : '#fef3c7'}; padding: 20px; border-radius: 10px; border: 3px solid ${leadQual.score === 'hot' ? '#dc2626' : '#f59e0b'};">
+        <p style="font-size: 22px; font-weight: bold; color: ${leadQual.score === 'hot' ? '#dc2626' : '#f59e0b'}; margin: 0 0 10px 0;">⏰ ${leadQual.score === 'hot' ? 'URGENT - ACTION REQUIRED NOW' : 'Action Required Today'}</p>
+        <p style="font-size: 16px; margin: 0; color: #1f2937;">${leadQual.score === 'hot' ? 'Contact this lead within 2 hours for best results!' : 'Follow up with this lead today.'}</p>
       </div>
     ` : ''}
     
@@ -276,9 +277,17 @@ async function sendLeadNotification(
 </html>
   `;
   
-  // Send email notification if Resend API key is configured
+  // Send email notification IMMEDIATELY if Resend API key is configured
+  // HOT leads always get notified, WARM leads only if they require follow-up
   if (RESEND_API_KEY && (leadQual.score === 'hot' || (leadQual.score === 'warm' && leadQual.requiresFollowUp))) {
     try {
+      console.log(`🚨 Sending ${leadQual.score.toUpperCase()} lead notification to ${BUSINESS_EMAIL}`, {
+        customerName: userInfo.name,
+        hasEmail: !!userInfo.email,
+        hasPhone: !!userInfo.phone,
+        leadScore: leadQual.score,
+      });
+      
       const emailResponse = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -306,10 +315,12 @@ async function sendLeadNotification(
           error_message: !emailResponse.ok ? JSON.stringify(emailResult) : null,
         });
       
-      console.log('Email notification result:', emailResult);
+      console.log(`✅ ${leadQual.score.toUpperCase()} lead notification sent successfully:`, emailResult);
     } catch (error) {
-      console.error('Failed to send email notification:', error);
+      console.error('❌ Failed to send email notification:', error);
     }
+  } else if (!RESEND_API_KEY) {
+    console.warn('⚠️ RESEND_API_KEY not configured - lead saved but no email notification sent');
   }
   
   // Note: For SMS, you would integrate Twilio here
@@ -405,8 +416,9 @@ INFORMATION GATHERING PROTOCOL (MANDATORY SEQUENCE):
    - "And what's your email address so we can send you confirmation and details?"
    - Or smoothly: "Perfect! And your email address?"
 
-5. AFTER COLLECTING BOTH: Confirm and set expectations
-   - "Excellent! We have [Name] at [phone] and [email]. Our team will reach out within 24 hours (or sooner for urgent matters). Is there anything else I can help you understand in the meantime?"
+5. AFTER COLLECTING BOTH: Confirm and set expectations based on urgency
+   - For HOT/URGENT leads: "Excellent! We have [Name] at [phone] and [email]. Our service team will reach out within a couple hours to get you taken care of. Is there anything else I can help you understand in the meantime?"
+   - For other inquiries: "Perfect! We have [Name] at [phone] and [email]. Our team will follow up with you soon. Is there anything else I can help you with?"
 
 6. IF THEY HESITATE OR REFUSE: Emphasize the benefit, don't give up on first try
    - "I totally understand! The reason I ask is so our experienced technicians can give you a personalized quote and timeline. We get back to people within a few hours typically. Would that work for you?"
@@ -425,8 +437,9 @@ INFORMATION GATHERING PROTOCOL (MANDATORY SEQUENCE):
 💡 FRAMING TIPS:
 - Position contact info collection as "so we can help you faster"
 - Make it about THEIR convenience ("so you don't have to wait on hold")
-- Emphasize quick response times ("within a few hours" or "same day")
-- For urgent issues, emphasize "our team will call you right away"
+- Emphasize quick response times: "within a couple hours" for urgent issues, "same day" for others
+- For urgent/critical issues, emphasize "our service team will reach out within a couple hours"
+- For appointments/quotes, say "our team will contact you shortly"
 
 COMPANY EXPERTISE:
 - 30+ years of specialized marine mechanical expertise
@@ -592,10 +605,23 @@ Remember: You represent a premium, expert service with decades of experience. Be
     const confirmationWords = ['yes', 'yeah', 'yep', 'sure', 'ok', 'okay', 'definitely', 'absolutely', 'please', 'interested'];
     const userConfirmedInterest = confirmationWords.some(word => lastUserMessage === word || lastUserMessage.startsWith(word + ' ') || lastUserMessage.endsWith(' ' + word));
     
+    // Check if we just collected both phone and email - add confirmation message
+    const justGotPhone = hasPhone && !hasEmail && message.match(/\d{3}[-.\s]?\d{3}[-.\s]?\d{4}/);
+    const justGotEmail = hasEmail && message.includes('@');
+    
+    // If we just got both pieces of info, add appropriate confirmation
+    if (hasName && hasPhone && hasEmail && (justGotPhone || justGotEmail)) {
+      const userName = userInfo.name || 'there';
+      if (leadQualification.score === 'hot') {
+        aiResponse += `\n\nPerfect! I have your information. Our service team will reach out to you within a couple hours to get you taken care of. Is there anything else I can help you understand in the meantime?`;
+      } else {
+        aiResponse += `\n\nGreat! I have your contact details. Our team will follow up with you soon. Is there anything else I can help you with?`;
+      }
+    }
     // Override AI response if they confirmed interest but we don't have contact info
-    if (userConfirmedInterest && hasName && (!hasPhone || !hasEmail)) {
+    else if (userConfirmedInterest && hasName && (!hasPhone || !hasEmail)) {
       if (!hasPhone && !hasEmail) {
-        aiResponse = `Perfect! Let me have our service manager reach out to you directly with availability and pricing. What's the best phone number to reach you at?`;
+        aiResponse = `Perfect! Let me have our service manager reach out to you directly. What's the best phone number to reach you at?`;
       } else if (!hasEmail) {
         aiResponse = `Great! And what's your email address so we can send you confirmation and details?`;
       } else if (!hasPhone) {

@@ -184,9 +184,9 @@ Bot: "Excellent! We have Matt at 555-1234 and matt@email.com.
 - Multiple buying signals + contact info
 
 **Business Action:**
-- Contact within 1 hour
+- Contact within 2 hours (customer is told "within a couple hours")
 - Prioritize over warm leads
-- Notification sent immediately
+- Notification sent IMMEDIATELY to designated employee/admin
 
 ### ⚠️ WARM LEADS (Follow-up Needed)
 **Triggers:**
@@ -340,7 +340,8 @@ Notifications are sent via email using [Resend](https://resend.com). To enable:
 
 3. **Response Time** (manual tracking recommended)
    - How fast are hot leads contacted?
-   - Target: < 1 hour for hot leads
+   - Target: < 2 hours for hot leads (customers are promised "within a couple hours")
+   - Notifications are sent IMMEDIATELY when lead is qualified
 
 ---
 
