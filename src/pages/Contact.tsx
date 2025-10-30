@@ -47,7 +47,7 @@ const Contact = () => {
               <h3 className="text-xl font-bold mb-4">Email Us</h3>
               <a
                 href="mailto:JDFperformancemarine@gmail.com"
-                className="text-lg text-secondary hover:underline block mb-2 break-all font-semibold"
+                className="text-lg text-secondary hover:underline block mb-2 whitespace-nowrap font-semibold"
               >
                 JDFperformancemarine@gmail.com
               </a>
