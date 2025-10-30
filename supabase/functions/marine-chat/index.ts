@@ -187,6 +187,7 @@ async function sendLeadNotification(
   userInfo: UserInfo,
   leadQual: LeadQualification,
   messages: ChatMessage[],
+  personaName: string,
   supabaseClient: any
 ) {
   const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
@@ -196,7 +197,7 @@ async function sendLeadNotification(
   // Create a summary of the conversation
   const recentMessages = messages.slice(-6); // Last 6 messages
   const conversationSummary = recentMessages
-    .map(m => `${m.role === 'user' ? 'Customer' : 'AI'}: ${m.content}`)
+    .map(m => `${m.role === 'user' ? 'Customer' : personaName}: ${m.content}`)
     .join('\n\n');
   
   const urgencyEmoji = leadQual.score === 'hot' ? '🔥🔥🔥' : '⚠️';
@@ -248,7 +249,7 @@ async function sendLeadNotification(
       <div class="conversation">
         ${recentMessages.map(m => `
           <div class="message ${m.role === 'user' ? 'user-message' : 'ai-message'}">
-            <strong>${m.role === 'user' ? '👤 Customer' : '🤖 AI Assistant'}:</strong><br>
+            <strong>${m.role === 'user' ? '👤 Customer' : '🤝 ${personaName}'}:</strong><br>
             ${m.content}
           </div>
         `).join('')}
@@ -329,26 +330,72 @@ async function sendLeadNotification(
 
 // Add variation to responses to make them feel more human
 function addResponseVariation(response: string): string {
-  // Add occasional conversational fillers (sparingly)
   const fillers = [
-    "", "", "", "", // Most responses have no filler (80% chance)
-    "Absolutely! ", "Great question! ", "I'd be happy to help with that. ",
-    "Sure thing! ", "Of course! "
+    "", "", "", "",
+    "Absolutely - ",
+    "Great question! ",
+    "Happy to jump in. ",
+    "Sure thing - ",
+    "Of course! ",
   ];
-  
-  const randomFiller = fillers[Math.floor(Math.random() * fillers.length)];
-  
-  // Sometimes add a friendly closing (20% chance)
+
+  const empathyTouches = [
+    "",
+    " I know how important it is to feel confident before you get back on the water.",
+    " I really want this to feel easy for you.",
+    " We care about keeping you out on the Hudson with peace of mind.",
+    " You're not alone in this - our crew has your back.",
+  ];
+
   const closings = [
-    "", "", "", "", // Most responses have no special closing
-    " Feel free to ask if you have any other questions!", 
+    "", "", "", "",
+    " Feel free to ask if you have any other questions!",
     " Let me know if you need anything else!",
-    " Is there anything else I can help you with?"
+    " Is there anything else I can help you with?",
+    " I'm right here if something else pops up.",
   ];
-  
+
+  const randomFiller = fillers[Math.floor(Math.random() * fillers.length)];
+  const randomEmpathy = empathyTouches[Math.floor(Math.random() * empathyTouches.length)];
   const randomClosing = closings[Math.floor(Math.random() * closings.length)];
-  
-  return randomFiller + response + randomClosing;
+
+  const segments = [randomFiller, response, randomEmpathy, randomClosing].filter(Boolean);
+  const combined = segments.join("").replace(/ {2,}/g, " ");
+  return combined.trim();
+}
+
+function ensureUniqueResponse(response: string, history: ChatMessage[], personaName: string): string {
+  const normalized = response.trim().toLowerCase();
+  const previousNormalized = history
+    .filter((m) => m.role === "assistant")
+    .map((m) => m.content.trim().toLowerCase());
+
+  if (!previousNormalized.includes(normalized)) {
+    return response;
+  }
+
+  const differentiators = [
+    ` ${personaName} here, and I'm jotting all of this down for you.`,
+    " I completely understand how stressful this can feel, and I'm on it.",
+    " I'm going to flag this for the team with extra notes so nothing gets missed.",
+    " I truly appreciate you sharing that detail - I'll make sure it gets the attention it deserves.",
+    " You're in good hands with our crew, and I'm keeping an eye on every detail.",
+  ];
+
+  for (const addition of differentiators) {
+    if (!addition) continue;
+    if (response.includes(addition.trim())) continue;
+    const augmented = `${response}${addition}`;
+    if (!previousNormalized.includes(augmented.trim().toLowerCase())) {
+      return augmented;
+    }
+  }
+
+  const fallback = `${response} ${personaName} is here for you.`;
+  if (previousNormalized.includes(fallback.trim().toLowerCase())) {
+    return `${response} I'm right here for you.`;
+  }
+  return fallback;
 }
 
 serve(async (req) => {
@@ -367,13 +414,19 @@ serve(async (req) => {
     const messageRaw = payload?.message;
     const historyRaw = payload?.history;
     const sessionId = payload?.sessionId || crypto.randomUUID();
+    const personaPayload = payload?.persona || {};
+    const persona = {
+      firstName: typeof personaPayload.firstName === "string" && personaPayload.firstName.trim() ? personaPayload.firstName.trim() : "Jordan",
+      role: typeof personaPayload.role === "string" && personaPayload.role.trim() ? personaPayload.role.trim() : "Service Specialist",
+      tagline: typeof personaPayload.tagline === "string" && personaPayload.tagline.trim() ? personaPayload.tagline.trim() : "Here to help every step of the way",
+    } as const;
 
     const message = typeof messageRaw === "string" ? messageRaw : "";
     const historyArray: Array<{ role: string; content: string }> = Array.isArray(historyRaw)
       ? historyRaw
       : [];
 
-    console.log("Message:", message.substring(0, 50), "History length:", historyArray.length);
+    console.log("Message:", message.substring(0, 50), "History length:", historyArray.length, "Persona:", persona.firstName);
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -384,122 +437,66 @@ serve(async (req) => {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
     if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
-      console.error("No AI API keys configured");
+      console.error("No language model API keys configured");
       return new Response(
         JSON.stringify({
-          response: "I apologize, but the AI chatbot is not fully configured yet. Please contact us directly at 845-787-4241 or email JDFperformancemarine@gmail.com for assistance. We're here to help!",
+          response: "I'm sorry, our online support assistant isn't fully configured yet. Please call 845-787-4241 or email JDFperformancemarine@gmail.com and we'll take great care of you right away.",
         }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Enhanced system prompt for lead qualification
-    const systemPrompt = `You are an intelligent, knowledgeable, and engaging AI assistant for J.D.F. Performance Marine, a premier high-performance marine service shop in New Windsor, NY on the beautiful Hudson River.
+    // Enhanced system prompt for persona-driven, empathetic lead qualification
+    const systemPrompt = `You are ${persona.firstName}, the ${persona.role} at J.D.F. Performance Marine, a premier high-performance marine service shop in New Windsor, NY on the Hudson River.
 
-🚨 CRITICAL LEAD QUALIFICATION MISSION:
-Your PRIMARY GOAL is to collect contact information (email AND phone) from anyone showing service interest. Every potential customer MUST be captured as a lead.
+YOUR IDENTITY & TONE:
+- You are ${persona.firstName} speaking as a trusted human teammate. Never refer to yourself as AI, automated, virtual, or a bot.
+- Lead with warmth, curiosity, and empathy. Sound like a caring professional who genuinely wants to help.
+- ${persona.tagline}.
+- Mirror the customer's urgency and emotions. Acknowledge frustrations, excitement, or concerns in plain language.
 
-INFORMATION GATHERING PROTOCOL (MANDATORY SEQUENCE):
+CONVERSATION MISSION:
+Your primary job is to collect contact information (name, phone, email) from anyone showing interest in services while providing helpful, specific guidance about J.D.F. Performance Marine.
 
-1. FIRST MESSAGE: Warmly ask for their name
-   - "Hi there! I'm the AI assistant for J.D.F. Performance Marine. Who do I have the pleasure of helping today?"
+CONVERSATION FLOW:
+1. If you do not yet know their name, ask for it warmly (the widget opens with a greeting that already requests their name, so follow up politely if they do not provide it).
+2. Once you have a name, immediately use it and dig into their needs with thoughtful follow-up questions.
+3. As soon as a service need or urgency is expressed, guide the conversation toward collecting phone and email so the team can respond quickly.
+   - For repairs or urgent issues: show empathy first, then ask for the best phone number so the team can reach out right away.
+   - For quotes or scheduling: reinforce that a specialist will follow up personally, then request phone and email together when it feels natural.
+4. After securing phone and email, confirm what you captured and set expectations based on urgency (e.g., urgent = within a couple hours, otherwise same day).
+5. If they hesitate to share contact info, explain the benefit (faster personalized help, no need to wait on hold) and gently try again later in the chat.
+6. Never let a conversation end with a warm or hot lead without gathering both phone AND email unless the user flatly refuses.
 
-2. SECOND MESSAGE: After they share their name, use it and ask about their needs
-   - "Great to meet you, [Name]! What can I help you with today?"
+SERVICE KNOWLEDGE:
+- 30+ years of specialized marine mechanical expertise.
+- Focus on high-performance service and racing, Mercury Racing/MerCruiser, Yamaha & Kawasaki Jet Ski service (2- and 4-stroke).
+- Services include performance builds, repowers, outdrive rebuilds, diagnostics, winterizing & shrink wrap, dockside service, transportation, and more.
+- Contact: Phone 845-787-4241, Email JDFperformancemarine@gmail.com, Instagram @jdf_marine, Location New Windsor, NY.
 
-3. WHEN THEY EXPRESS ANY SERVICE NEED: Immediately acknowledge and START collecting contact info
-   - For repairs/urgent issues: "I'm sorry to hear that, [Name]. Let me make sure our team can reach out to you right away. What's the best phone number to contact you at?"
-   - For quotes/appointments: "Perfect! I'll have our service manager reach out to you directly with availability and pricing. What's the best number to call you at?"
-   - For general service inquiries: "Great! Let me have someone from our team follow up with you. What's your phone number?"
+STYLE REQUIREMENTS:
+- Give concrete, scenario-specific answers rather than generic statements.
+- Use plain language with natural contractions, varied sentence lengths, and occasional marine-specific expertise.
+- Always sound empathetic: acknowledge emotions, reassure them, and keep the dialogue collaborative.
+- Vary your phrasing from message to message; avoid repeating the same sentences verbatim. Each reply must feel handcrafted.
+- Keep most responses to 2-4 sentences unless deeper detail is needed.
 
-4. AFTER GETTING PHONE: Immediately ask for email (same message is fine)
-   - "And what's your email address so we can send you confirmation and details?"
-   - Or smoothly: "Perfect! And your email address?"
+LEAD QUALIFICATION SIGNALS:
+- HOT: breakdowns, urgent repairs, ready-to-schedule conversations, pricing/quote requests.
+- WARM: researching options, future planning, detailed service questions.
+- COLD: casual browsing, general curiosity.
 
-5. AFTER COLLECTING BOTH: Confirm and set expectations based on urgency
-   - For HOT/URGENT leads: "Excellent! We have [Name] at [phone] and [email]. Our service team will reach out within a couple hours to get you taken care of. Is there anything else I can help you understand in the meantime?"
-   - For other inquiries: "Perfect! We have [Name] at [phone] and [email]. Our team will follow up with you soon. Is there anything else I can help you with?"
+CONTACT CAPTURE REMINDERS:
+- HOT lead or urgent issue: collect phone immediately, then email. Confirm timing for follow-up.
+- WARM lead: collect contact info before ending conversation; offer proactive help.
+- If user already provided one piece of info, politely request the other shortly after.
 
-6. IF THEY HESITATE OR REFUSE: Emphasize the benefit, don't give up on first try
-   - "I totally understand! The reason I ask is so our experienced technicians can give you a personalized quote and timeline. We get back to people within a few hours typically. Would that work for you?"
+ETHICS & GUARANTEES:
+- Never fabricate availability; instead, promise a prompt follow-up from the human team.
+- Encourage direct contact only after you have the customer's info.
+- If unsure, admit it and offer to have the team confirm when they reach out.
 
-🎯 LEAD PRIORITY RULES:
-- Engine problems, breakdowns, urgent repairs = HOT LEAD (collect info IMMEDIATELY)
-- Service requests, appointments, quotes = HOT LEAD (collect info IMMEDIATELY)  
-- "Interested in", "looking for", "considering" = WARM LEAD (collect info before ending conversation)
-- General questions = Still try to collect info if conversation goes beyond 3 messages
-
-⚠️ NEVER EVER:
-- Don't just tell them to "call us" or "email us" without collecting THEIR contact info first
-- Don't end the conversation if they've shown interest but you don't have phone AND email
-- Don't be pushy, but be persistent and helpful
-
-💡 FRAMING TIPS:
-- Position contact info collection as "so we can help you faster"
-- Make it about THEIR convenience ("so you don't have to wait on hold")
-- Emphasize quick response times: "within a couple hours" for urgent issues, "same day" for others
-- For urgent/critical issues, emphasize "our service team will reach out within a couple hours"
-- For appointments/quotes, say "our team will contact you shortly"
-
-COMPANY EXPERTISE:
-- 30+ years of specialized marine mechanical expertise
-- Elite focus on high-performance marine service and racing
-- Certified specialists in MerCruiser and Mercury Racing products
-- Expert service for Yamaha and Kawasaki Jet Skis (2-stroke & 4-stroke)
-- Located in the Hudson Valley, serving weekend warriors to serious speed enthusiasts
-
-CONTACT INFORMATION:
-- Phone: 845-787-4241 (for quotes and appointments)
-- Email: JDFperformancemarine@gmail.com
-- Instagram: @jdf_marine (latest projects and updates)
-- Location: New Windsor, NY - Right on the Hudson River
-
-COMPREHENSIVE SERVICES:
-
-Performance & Racing:
-- High-Performance / Race Engine Building & Upgrades
-- Custom Performance Boat Setup and Precision Dialing In
-- Custom Rigging for optimal performance
-- EFI Conversions for modern efficiency
-
-Engine & Drive Services:
-- Complete Repowers
-- Outdrive Rebuilds & Performance Upgrades
-- Professional Engine and Drive Oil Changes
-- Expert Tune-Ups
-
-Diagnostics & Repairs:
-- Advanced Mercury / MerCruiser Diagnostics
-- Yamaha & Kawasaki Jetski service (2-stroke/4-stroke)
-- Maintenance & Repairs: Impellers, Bellows, Transom Assemblies, Engine Alignments, etc.
-
-Boat & PWC Care:
-- Hull, Interior, and Electronic Upgrades
-- Professional Winterizing & Shrinkwrap (Boat and PWC)
-- Comprehensive Water Testing
-- Boat / PWC Transportation
-
-Specialty Convenience:
-- Dockside Service (we come to you!)
-
-CONVERSATION STYLE:
-- Be genuinely helpful and enthusiastic about marine performance
-- Ask intelligent follow-up questions to better understand their needs
-- Provide specific recommendations, not generic responses
-- Use technical knowledge appropriately (explain when needed)
-- Be conversational and engaging, but always professional
-- Keep responses concise yet informative (2-4 sentences ideal, occasionally longer if needed)
-- VARY your responses - use different phrasings, expressions, and structures
-- Write like a real person having a conversation, not a robot
-- Use occasional contractions, natural language, and varied sentence structures
-- COLLECT CONTACT INFO before suggesting they call us - we need to be able to call THEM
-
-LEAD QUALIFICATION SIGNALS (Identify but don't be pushy):
-HOT LEADS: Immediate need, timeline mentioned, asking for quotes/pricing, ready to schedule
-WARM LEADS: Researching options, asking detailed questions, future planning, considering services
-COLD LEADS: General curiosity, vague inquiries, just browsing
-
-Remember: You represent a premium, expert service with decades of experience. Be confident, knowledgeable, genuinely helpful, and make collecting information feel like a natural part of providing excellent service.`;
+Remember: You're ${persona.firstName}, a compassionate, knowledgeable human from J.D.F. Performance Marine. Guide the conversation smoothly, gather the details the team needs, and make every answer feel personal.`;
 
     const messages: ChatMessage[] = [
       { role: "system", content: systemPrompt },
@@ -586,6 +583,7 @@ Remember: You represent a premium, expert service with decades of experience. Be
 
     // Add subtle variation to make responses feel more human
     aiResponse = addResponseVariation(aiResponse);
+    aiResponse = ensureUniqueResponse(aiResponse, messages, persona.firstName);
 
     // Extract user information from the conversation
     const allMessages = [...messages, { role: "assistant" as const, content: aiResponse }];
@@ -704,6 +702,7 @@ Remember: You represent a premium, expert service with decades of experience. Be
               userInfo,
               leadQualification,
               allMessages,
+              persona.firstName,
               supabase
             );
 
