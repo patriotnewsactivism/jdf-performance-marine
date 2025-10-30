@@ -51,10 +51,11 @@ const Services = () => {
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-background to-muted">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-6">Our Services</h1>
+      <section className="py-20 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">Our Services</h1>
             <p className="text-xl text-muted-foreground">
               Comprehensive marine services from routine maintenance to high-performance upgrades. Whether you need tune-ups or custom race engine building, we deliver precision work backed by 30+ years of experience.
             </p>
@@ -67,12 +68,12 @@ const Services = () => {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {services.map((serviceGroup, index) => (
-              <Card key={index} className="p-8">
-                <h2 className="text-2xl font-bold mb-6 text-primary">{serviceGroup.category}</h2>
+              <Card key={index} className="p-8 hover:shadow-xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1 border-l-4 border-l-primary/50">
+                <h2 className="text-2xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{serviceGroup.category}</h2>
                 <ul className="space-y-4">
                   {serviceGroup.items.map((item, itemIndex) => (
-                    <li key={itemIndex} className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center mt-0.5">
+                    <li key={itemIndex} className="flex items-start gap-3 group">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mt-0.5 group-hover:shadow-glow-orange transition-all">
                         <Check className="w-4 h-4 text-primary" />
                       </div>
                       <span className="text-foreground">{item}</span>
@@ -91,13 +92,13 @@ const Services = () => {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-8 text-center">We Specialize In</h2>
             <div className="grid md:grid-cols-2 gap-8">
-              <Card className="p-6 border-2 border-primary/20">
+              <Card className="p-6 border-2 border-primary/20 hover:border-primary/50 hover:shadow-glow-orange transition-all duration-300 hover:-translate-y-2">
                 <h3 className="text-xl font-bold mb-4 text-primary">MerCruiser & Mercury Racing</h3>
                 <p className="text-muted-foreground">
                   Expert diagnostics, service, and performance upgrades for MerCruiser and Mercury Racing products. From routine maintenance to race-ready builds.
                 </p>
               </Card>
-              <Card className="p-6 border-2 border-secondary/20">
+              <Card className="p-6 border-2 border-secondary/20 hover:border-secondary/50 hover:shadow-glow-blue transition-all duration-300 hover:-translate-y-2">
                 <h3 className="text-xl font-bold mb-4 text-secondary">Yamaha & Kawasaki Jet Skis</h3>
                 <p className="text-muted-foreground">
                   Comprehensive 2-stroke and 4-stroke service, repair, and performance upgrades for Yamaha and Kawasaki personal watercraft.

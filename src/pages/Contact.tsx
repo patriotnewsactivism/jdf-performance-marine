@@ -6,10 +6,11 @@ const Contact = () => {
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-background to-muted">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-6">Get in Touch</h1>
+      <section className="py-20 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-3xl mx-auto text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">Get in Touch</h1>
             <p className="text-xl text-muted-foreground">
               Ready to get started? Contact us today for a quote or to discuss your marine service needs.
             </p>
@@ -22,14 +23,14 @@ const Contact = () => {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Phone */}
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-                <Phone className="w-8 h-8 text-primary" />
+            <Card className="p-8 text-center hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-2 group">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 mb-6 group-hover:shadow-glow-orange transition-all">
+                <Phone className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xl font-bold mb-4">Call Us</h3>
               <a
                 href="tel:845-787-4241"
-                className="text-lg text-primary hover:underline block mb-2"
+                className="text-lg text-primary hover:underline block mb-2 font-semibold"
               >
                 845-787-4241
               </a>
@@ -39,14 +40,14 @@ const Contact = () => {
             </Card>
 
             {/* Email */}
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-secondary/10 mb-6">
-                <Mail className="w-8 h-8 text-secondary" />
+            <Card className="p-8 text-center hover:shadow-xl hover:shadow-secondary/20 transition-all duration-300 hover:-translate-y-2 group">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-secondary/10 to-primary/10 mb-6 group-hover:shadow-glow-blue transition-all">
+                <Mail className="w-8 h-8 text-secondary group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xl font-bold mb-4">Email Us</h3>
               <a
                 href="mailto:JDFperformancemarine@gmail.com"
-                className="text-lg text-secondary hover:underline block mb-2 break-all"
+                className="text-lg text-secondary hover:underline block mb-2 break-all font-semibold"
               >
                 JDFperformancemarine@gmail.com
               </a>
@@ -56,16 +57,16 @@ const Contact = () => {
             </Card>
 
             {/* Instagram */}
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6">
-                <Instagram className="w-8 h-8 text-primary" />
+            <Card className="p-8 text-center hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 hover:-translate-y-2 group">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary/10 to-secondary/10 mb-6 group-hover:shadow-glow-orange transition-all">
+                <Instagram className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
               </div>
               <h3 className="text-xl font-bold mb-4">Follow Us</h3>
               <a
                 href="https://www.instagram.com/jdf_marine"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg text-primary hover:underline block mb-2"
+                className="text-lg text-primary hover:underline block mb-2 font-semibold"
               >
                 @jdf_marine
               </a>
