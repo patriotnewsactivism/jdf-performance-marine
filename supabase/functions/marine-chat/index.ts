@@ -190,7 +190,7 @@ async function sendLeadNotification(
   supabaseClient: any
 ) {
   const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-  const BUSINESS_EMAIL = Deno.env.get("BUSINESS_EMAIL") || "JDFperformancemarine@gmail.com";
+  const BUSINESS_EMAIL = Deno.env.get("BUSINESS_EMAIL") || "patriotnewsactivism@gmail.com"; // Testing email - change to JDFperformancemarine@gmail.com for production
   const BUSINESS_PHONE = Deno.env.get("BUSINESS_PHONE") || "845-787-4241";
   
   // Create a summary of the conversation
