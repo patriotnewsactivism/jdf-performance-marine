@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Award, Users } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -32,17 +33,68 @@ const About = () => {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             <div>
-              <h2 className="text-4xl font-bold mb-6">Our Story</h2>
+              <div className="mb-2 text-sm font-medium text-primary">Option 1: Clear & Scannable (Recommended)</div>
+              <h2 className="text-4xl font-bold mb-6">Our Story: 30+ Years of Hudson Valley Marine Performance</h2>
               <div className="space-y-4 text-lg text-muted-foreground">
                 <p>
                   Located along the beautiful Hudson River in New Windsor, NY, our Performance Marine Shop proudly serves the Hudson Valley with over 30 years of expert experience in the marine mechanical and service industry.
                 </p>
                 <p>
-                  We specialize in high-performance marine service, with a focus on MerCruiser and Mercury Racing products as well as Yamaha and Kawasaki Jet Skis.
+                  From weekend warriors to serious speed enthusiasts, we are the Hudson Valley's trusted source for reliable, high-performance marine service. Our passion is performance, and our mission is to keep your vessel running at its absolute peak.
                 </p>
-                <p>
-                  Our seasoned team is dedicated to delivering top-tier mechanical services, diagnostics, and performance upgrades for powerboats, sport boats, and performance watercraft.
+              </div>
+
+              <div className="mt-8 space-y-4">
+                <h3 className="text-2xl font-semibold">Decades of Hands-On Expertise</h3>
+                <p className="text-muted-foreground text-lg">
+                  Our seasoned team is dedicated to delivering top-tier mechanical services, diagnostics, and performance upgrades for powerboats, sport boats, and performance watercraft. We provide precision work backed by decades of hands-on knowledge.
                 </p>
+                <div>
+                  <div className="font-medium mb-2">Our specializations include:</div>
+                  <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                    <li>MerCruiser &amp; Mercury Racing Products</li>
+                    <li>Yamaha &amp; Kawasaki Jet Skis</li>
+                    <li>High-Performance Tuning &amp; Custom Rigging</li>
+                    <li>Routine Maintenance &amp; Diagnostics</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="mt-8 space-y-4">
+                <h3 className="text-2xl font-semibold">Service That Comes to You</h3>
+                <p className="text-muted-foreground text-lg">
+                  We know that convenience is key. Conveniently situated near the water, we are proud to offer:
+                </p>
+                <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+                  <li>Dockside Service</li>
+                  <li>Water Testing</li>
+                  <li>Seasonal Solutions</li>
+                </ul>
+                <p className="text-muted-foreground text-lg">
+                  Whether you need a pre-season tune-up or a complex performance upgrade, we have the expertise and passion to get the job done right.
+                </p>
+              </div>
+
+              <div className="mt-10">
+                <Accordion type="single" collapsible className="w-full border rounded-lg">
+                  <AccordionItem value="option-2" className="px-4">
+                    <AccordionTrigger className="text-left">Option 2: Narrative-Focused</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-4 text-lg text-muted-foreground">
+                        <h3 className="text-2xl font-semibold text-foreground">Our Story</h3>
+                        <p>
+                          For over 30 years, our team has been dedicated to one thing: high-performance marine service. We built our shop right here on the beautiful Hudson River in New Windsor, NY, to serve the Hudson Valley community we're a part of.
+                        </p>
+                        <p>
+                          We're not just mechanics; we're enthusiasts. We understand the thrill of a perfectly tuned engine, which is why we specialize in MerCruiser and Mercury Racing products, as well as Yamaha and Kawasaki Jet Skis. Our seasoned team brings decades of hands-on knowledge to every job, from routine maintenance and custom rigging to complex diagnostics and performance upgrades.
+                        </p>
+                        <p>
+                          We built our reputation on precision work and a passion for powerboats, sport boats, and watercraft. And because we're on the water, we're able to offer convenient dockside service, water testing, and seasonal solutions to keep you running at peak performance. From weekend warriors to serious speed enthusiasts, we are the Hudson Valley's trusted source for reliable service.
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </div>
             <div className="relative h-[500px] rounded-xl overflow-hidden shadow-2xl">
