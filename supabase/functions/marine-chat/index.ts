@@ -22,12 +22,20 @@ function toGeminiContents(messages: ChatMessage[]) {
 }
 
 serve(async (req) => {
+  console.log(`[${new Date().toISOString()}] Request received:`, req.method, req.url);
+  
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const payload = await req.json().catch(() => ({}));
+    const payload = await req.json().catch((e) => {
+      console.error("Failed to parse request body:", e);
+      return {};
+    });
+    
+    console.log("Payload received:", JSON.stringify(payload).substring(0, 100));
+    
     const messageRaw = payload?.message;
     const historyRaw = payload?.history;
 
@@ -36,16 +44,23 @@ serve(async (req) => {
       ? historyRaw
       : [];
 
+    console.log("Message:", message.substring(0, 50), "History length:", historyArray.length);
+
     const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    
+    console.log("API Keys configured:", {
+      openai: !!OPENAI_API_KEY,
+      gemini: !!GEMINI_API_KEY
+    });
 
     if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
+      console.error("No AI API keys configured in Supabase function secrets");
       return new Response(
         JSON.stringify({
-          error:
-            "No AI provider configured. Set OPENAI_API_KEY or GEMINI_API_KEY as a Function secret and redeploy.",
+          response: "I apologize, but the AI chatbot is not fully configured yet. Please contact us directly at 845-787-4241 or email JDFperformancemarine@gmail.com for assistance. We're here to help!",
         }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -133,67 +148,72 @@ Remember: You represent a premium, expert service with decades of experience. Be
     let aiResponse = "";
 
     if (OPENAI_API_KEY) {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini",
-          messages,
-          temperature: 0.7,
-          max_tokens: 500,
-        }),
-      });
+      console.log("Using OpenAI API");
+      try {
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${OPENAI_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages,
+            temperature: 0.7,
+            max_tokens: 500,
+          }),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("OpenAI API Error:", response.status, errorText);
-        throw new Error(`OpenAI request failed: ${response.status}`);
-      }
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("OpenAI API Error:", response.status, errorText);
+          throw new Error(`OpenAI request failed: ${response.status} - ${errorText.substring(0, 200)}`);
+        }
 
-      const data = await response.json();
-      aiResponse = data?.choices?.[0]?.message?.content ?? "";
-      
-      if (!aiResponse || aiResponse.trim() === "") {
-        console.error("OpenAI returned empty response:", data);
-        throw new Error("OpenAI returned an empty response");
+        const data = await response.json();
+        aiResponse = data?.choices?.[0]?.message?.content ?? "";
+        console.log("OpenAI response received, length:", aiResponse.length);
+      } catch (error) {
+        console.error("OpenAI API exception:", error);
+        throw error;
       }
     } else if (GEMINI_API_KEY) {
-      const { contents, systemInstruction } = toGeminiContents(messages);
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents,
-          systemInstruction,
-          generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
-        }),
-      });
+      console.log("Using Gemini API");
+      try {
+        const { contents, systemInstruction } = toGeminiContents(messages);
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents,
+            systemInstruction,
+            generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
+          }),
+        });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Gemini API Error:", response.status, errorText);
-        throw new Error(`Gemini request failed: ${response.status}`);
-      }
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Gemini API Error:", response.status, errorText);
+          throw new Error(`Gemini request failed: ${response.status} - ${errorText.substring(0, 200)}`);
+        }
 
-      const data = await response.json();
-      const parts = data?.candidates?.[0]?.content?.parts;
-      aiResponse = Array.isArray(parts)
-        ? parts.map((p: { text?: string }) => p?.text ?? "").join("")
-        : "";
-      
-      if (!aiResponse || aiResponse.trim() === "") {
-        console.error("Gemini returned empty response:", data);
-        throw new Error("Gemini returned an empty response");
+        const data = await response.json();
+        console.log("Gemini response data:", JSON.stringify(data).substring(0, 200));
+        const parts = data?.candidates?.[0]?.content?.parts;
+        aiResponse = Array.isArray(parts)
+          ? parts.map((p: { text?: string }) => p?.text ?? "").join("")
+          : "";
+        console.log("Gemini response received, length:", aiResponse.length);
+      } catch (error) {
+        console.error("Gemini API exception:", error);
+        throw error;
       }
     }
-
-    // Final validation before sending response
+    
+    // If we still don't have a response, provide a fallback
     if (!aiResponse || aiResponse.trim() === "") {
-      throw new Error("AI service returned an empty response");
+      aiResponse = "I apologize, but I couldn't generate a response. Please contact us directly at 845-787-4241 or email JDFperformancemarine@gmail.com for assistance.";
     }
 
     return new Response(JSON.stringify({ response: aiResponse }), {
@@ -201,9 +221,22 @@ Remember: You represent a premium, expert service with decades of experience. Be
     });
   } catch (error) {
     console.error("Error in marine-chat function:", error);
-    const message = error instanceof Error ? error.message : "An error occurred";
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
+    
+    // Log more details for debugging
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
+    
+    // Return a user-friendly error with fallback message
+    const fallbackMessage = "I apologize, but I'm experiencing technical difficulties. Please contact us directly at 845-787-4241 or email JDFperformancemarine@gmail.com for assistance. We're here to help!";
+    
+    return new Response(JSON.stringify({ 
+      response: fallbackMessage,
+      error: error instanceof Error ? error.message : "An error occurred"
+    }), {
+      status: 200, // Return 200 with fallback message instead of 500
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }

@@ -44,20 +44,15 @@ const ChatBot = () => {
         body: { message: userMessage, history: messages },
       });
 
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw new Error(error.message || "Failed to invoke chat function");
-      }
-
-      // Check if the response contains an error from the edge function
+      if (error) throw error;
+      
+      // Check if the response contains an error
       if (data?.error) {
-        console.error("Edge function returned error:", data.error);
         throw new Error(data.error);
       }
-
-      // Check if response exists and is not empty
+      
+      // Check if response is missing
       if (!data?.response) {
-        console.error("No response from AI:", data);
         throw new Error("No response received from AI assistant");
       }
 
@@ -72,14 +67,15 @@ const ChatBot = () => {
     } catch (error) {
       console.error("Chat error:", error);
       setIsTyping(false);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      toast.error(`Sorry, I'm having trouble responding: ${errorMessage}`);
-      // Add error message to chat for better visibility
+      const errorMessage = error instanceof Error ? error.message : "Sorry, I'm having trouble responding. Please try again.";
+      toast.error(errorMessage);
+      
+      // Add a fallback message to chat
       setMessages((prev) => [
         ...prev,
         { 
           role: "assistant", 
-          content: "I apologize, but I'm experiencing technical difficulties. Please ensure the AI service is properly configured and try again." 
+          content: "I apologize, but I'm experiencing technical difficulties. Please try again later or contact us directly at 845-787-4241 for immediate assistance." 
         },
       ]);
     } finally {
