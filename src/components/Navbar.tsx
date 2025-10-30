@@ -18,12 +18,12 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-b border-border shadow-md">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a1a] backdrop-blur-md border-b border-border/20 shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="J.D.F. Performance Marine" className="h-14 w-auto" />
+            <img src={logo} alt="J.D.F. Performance Marine" className="h-16 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -35,7 +35,7 @@ const Navbar = () => {
                 className={`text-base font-medium transition-colors hover:text-primary ${
                   isActive(link.path)
                     ? "text-primary"
-                    : "text-muted-foreground"
+                    : "text-gray-200"
                 }`}
               >
                 {link.name}
@@ -51,21 +51,21 @@ const Navbar = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-accent/10 transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >
             {isOpen ? (
-              <X className="w-6 h-6 text-foreground" />
+              <X className="w-6 h-6 text-white" />
             ) : (
-              <Menu className="w-6 h-6 text-foreground" />
+              <Menu className="w-6 h-6 text-white" />
             )}
           </button>
         </div>
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 space-y-3 border-t border-border">
+          <div className="md:hidden py-4 space-y-3 border-t border-white/20 bg-[#1a1a1a]">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -73,7 +73,7 @@ const Navbar = () => {
                 className={`block py-2 px-4 rounded-lg transition-colors ${
                   isActive(link.path)
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent/10"
+                    : "text-gray-200 hover:bg-white/10"
                 }`}
                 onClick={() => setIsOpen(false)}
               >
