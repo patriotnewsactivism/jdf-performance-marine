@@ -11,12 +11,18 @@ interface Message {
   content: string;
 }
 
+// Generate a unique session ID for this conversation
+const generateSessionId = () => {
+  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [sessionId] = useState(generateSessionId());
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi! I'm your intelligent marine service assistant. I can help you with service recommendations, answer technical questions, and guide you through our capabilities. What can I help you with today?",
+      content: "Hi there! I'm the AI assistant for J.D.F. Performance Marine. Who do I have the pleasure of helping today?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -40,8 +46,16 @@ const ChatBot = () => {
     setIsTyping(true);
 
     try {
+      // Add a more human-like delay before "typing" starts (random between 800-1500ms)
+      const initialDelay = 800 + Math.random() * 700;
+      await new Promise(resolve => setTimeout(resolve, initialDelay));
+
       const { data, error } = await supabase.functions.invoke("marine-chat", {
-        body: { message: userMessage, history: messages },
+        body: { 
+          message: userMessage, 
+          history: messages,
+          sessionId: sessionId,
+        },
       });
 
       if (error) throw error;
@@ -56,8 +70,14 @@ const ChatBot = () => {
         throw new Error("No response received from AI assistant");
       }
 
-      // Simulate typing delay for more natural feel
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Longer typing delay based on response length (more realistic)
+      // Average typing speed: ~40 words per minute for thoughtful responses
+      const wordCount = data.response.split(' ').length;
+      const baseTypingTime = Math.min(wordCount * 150, 4000); // Cap at 4 seconds
+      const randomVariation = Math.random() * 1000; // Add 0-1 second variation
+      const typingDelay = baseTypingTime + randomVariation;
+      
+      await new Promise(resolve => setTimeout(resolve, typingDelay));
       
       setIsTyping(false);
       setMessages((prev) => [
