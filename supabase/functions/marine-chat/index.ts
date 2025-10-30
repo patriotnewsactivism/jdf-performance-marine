@@ -40,12 +40,12 @@ serve(async (req) => {
     const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
     if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
+      console.error("No AI API keys configured in Supabase function secrets");
       return new Response(
         JSON.stringify({
-          error:
-            "No AI provider configured. Set OPENAI_API_KEY or GEMINI_API_KEY as a Function secret and redeploy.",
+          response: "I apologize, but the AI chatbot is not fully configured yet. Please contact us directly at 845-787-4241 or email JDFperformancemarine@gmail.com for assistance. We're here to help!",
         }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -179,6 +179,11 @@ Remember: You represent a premium, expert service with decades of experience. Be
       aiResponse = Array.isArray(parts)
         ? parts.map((p: { text?: string }) => p?.text ?? "").join("")
         : "";
+    }
+    
+    // If we still don't have a response, provide a fallback
+    if (!aiResponse || aiResponse.trim() === "") {
+      aiResponse = "I apologize, but I couldn't generate a response. Please contact us directly at 845-787-4241 or email JDFperformancemarine@gmail.com for assistance.";
     }
 
     return new Response(JSON.stringify({ response: aiResponse }), {
