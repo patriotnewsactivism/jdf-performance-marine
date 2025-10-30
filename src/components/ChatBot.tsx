@@ -45,6 +45,16 @@ const ChatBot = () => {
       });
 
       if (error) throw error;
+      
+      // Check if the response contains an error
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+      
+      // Check if response is missing
+      if (!data?.response) {
+        throw new Error("No response received from AI assistant");
+      }
 
       // Simulate typing delay for more natural feel
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -57,7 +67,17 @@ const ChatBot = () => {
     } catch (error) {
       console.error("Chat error:", error);
       setIsTyping(false);
-      toast.error("Sorry, I'm having trouble responding. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Sorry, I'm having trouble responding. Please try again.";
+      toast.error(errorMessage);
+      
+      // Add a fallback message to chat
+      setMessages((prev) => [
+        ...prev,
+        { 
+          role: "assistant", 
+          content: "I apologize, but I'm experiencing technical difficulties. Please try again later or contact us directly at 845-787-4241 for immediate assistance." 
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
