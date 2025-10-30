@@ -4,6 +4,7 @@ import { Phone, Wrench, Zap, Shield, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroBoat from "@/assets/hero-boat.jpg";
 import serviceWork from "@/assets/service-work.jpg";
+import { popularServices } from "@/content/services";
 
 const Home = () => {
   const features = [
@@ -24,14 +25,7 @@ const Home = () => {
     },
   ];
 
-  const popularServices = [
-    "Custom Rigging",
-    "Race Engine Building",
-    "Outdrive Rebuilds",
-    "Mercury / MerCruiser Diagnostics",
-    "Winterizing & Shrinkwrap",
-    "Water Testing",
-  ];
+  
 
   return (
     <div className="min-h-screen">

@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, MapPin, Instagram, Clock } from "lucide-react";
+import { site } from "@/content/site";
 
 const Contact = () => {
   return (
@@ -28,10 +29,10 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-bold mb-4">Call Us</h3>
               <a
-                href="tel:845-787-4241"
+                href={`tel:${site.phone.replace(/[^\d]/g, "")}`}
                 className="text-lg text-primary hover:underline block mb-2"
               >
-                845-787-4241
+                {site.phone}
               </a>
               <p className="text-sm text-muted-foreground">
                 Give us a call for quotes and appointments
@@ -45,10 +46,10 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-bold mb-4">Email Us</h3>
               <a
-                href="mailto:JDFperformancemarine@gmail.com"
+                href={`mailto:${site.email}`}
                 className="text-lg text-secondary hover:underline block mb-2 break-all"
               >
-                JDFperformancemarine@gmail.com
+                {site.email}
               </a>
               <p className="text-sm text-muted-foreground">
                 Send us your questions or service requests
@@ -62,12 +63,12 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-bold mb-4">Follow Us</h3>
               <a
-                href="https://www.instagram.com/jdf_marine"
+                href={site.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg text-primary hover:underline block mb-2"
               >
-                @jdf_marine
+                {site.instagramHandle}
               </a>
               <p className="text-sm text-muted-foreground">
                 See our latest projects and updates
@@ -91,10 +92,10 @@ const Contact = () => {
                   <h3 className="text-2xl font-bold">Location</h3>
                 </div>
                 <p className="text-lg mb-4">
-                  <strong>J.D.F. Performance Marine</strong>
+                  <strong>{site.companyName}</strong>
                 </p>
                 <p className="text-muted-foreground mb-2">
-                  New Windsor, NY
+                  {site.location}
                 </p>
                 <p className="text-muted-foreground">
                   Located along the beautiful Hudson River

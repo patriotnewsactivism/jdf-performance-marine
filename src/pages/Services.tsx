@@ -2,51 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
+import { servicesCatalog } from "@/content/services";
 
 const Services = () => {
-  const services = [
-    {
-      category: "Performance & Racing",
-      items: [
-        "High-Performance / Race Engine Building or Upgrades",
-        "High-Performance Boat Setup and Dialing In",
-        "Custom Rigging",
-        "EFI Conversions",
-      ],
-    },
-    {
-      category: "Engine & Drive Services",
-      items: [
-        "Repowers",
-        "Outdrive Rebuilds or Upgrades",
-        "Engine and Drive Oil Changes",
-        "Tune Ups",
-      ],
-    },
-    {
-      category: "Diagnostics & Repairs",
-      items: [
-        "Mercury / MerCruiser Diagnostics",
-        "Yamaha and Kawasaki Jetski 2 stroke / 4 stroke service, repair, and upgrades",
-        "Maintenance and Repairs (Impellers, Bellos, Transom Assemblies, Engine Alignments, etc.)",
-      ],
-    },
-    {
-      category: "Boat & PWC Care",
-      items: [
-        "Hull, Interior and Electronic Upgrades",
-        "Winterizing and Shrinkwrap (Boat and PWC)",
-        "Water Testing",
-        "Boat / PWC Transportation",
-      ],
-    },
-    {
-      category: "Specialty Services",
-      items: [
-        "Dockside Service",
-      ],
-    },
-  ];
+  
 
   return (
     <div className="min-h-screen pt-20">
@@ -66,7 +25,7 @@ const Services = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {services.map((serviceGroup, index) => (
+            {servicesCatalog.map((serviceGroup, index) => (
               <Card key={index} className="p-8">
                 <h2 className="text-2xl font-bold mb-6 text-primary">{serviceGroup.category}</h2>
                 <ul className="space-y-4">
