@@ -11,6 +11,48 @@ interface Message {
   content: string;
 }
 
+interface Persona {
+  firstName: string;
+  role: string;
+  tagline: string;
+  greeting: string;
+}
+
+const PERSONA_POOL: Array<Omit<Persona, "tagline" | "greeting">> = [
+  { firstName: "Jason", role: "Performance Specialist" },
+  { firstName: "Elena", role: "Service Coordinator" },
+  { firstName: "Marcus", role: "Lead Technician" },
+  { firstName: "Sofia", role: "Customer Care Lead" },
+  { firstName: "Caleb", role: "Performance Advisor" },
+];
+
+const PERSONA_TAGLINES = [
+  "Here to make things easier for you",
+  "Listening closely and ready to lend a hand",
+  "Your go-to teammate for anything marine",
+  "Focused on getting you back on the water",
+  "Taking care of the details so you don't have to",
+];
+
+const GREETING_TEMPLATES = [
+  (persona: Persona) => `Hey there! I'm ${persona.firstName} with J.D.F. Performance Marine. Who do I have the pleasure of helping today?`,
+  (persona: Persona) => `Hi, I'm ${persona.firstName} here at J.D.F. Performance Marine. I'd love to know your name so I can support you properly - who am I chatting with?`,
+  (persona: Persona) => `Hello! ${persona.firstName} checking in from J.D.F. Performance Marine. What's your name so I can make sure we take great care of you?`,
+  (persona: Persona) => `Hi there, I'm ${persona.firstName} from J.D.F. Performance Marine. Who should I make a note for while we get you taken care of?`,
+];
+
+const createSessionPersona = (): Persona => {
+  const base = PERSONA_POOL[Math.floor(Math.random() * PERSONA_POOL.length)];
+  const persona: Persona = {
+    ...base,
+    tagline: PERSONA_TAGLINES[Math.floor(Math.random() * PERSONA_TAGLINES.length)],
+    greeting: "",
+  };
+  const greetingTemplate = GREETING_TEMPLATES[Math.floor(Math.random() * GREETING_TEMPLATES.length)];
+  persona.greeting = greetingTemplate(persona);
+  return persona;
+};
+
 // Generate a unique session ID for this conversation
 const generateSessionId = () => {
   return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -19,10 +61,11 @@ const generateSessionId = () => {
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sessionId] = useState(generateSessionId());
+  const [persona] = useState<Persona>(() => createSessionPersona());
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hi there! I'm the AI assistant for J.D.F. Performance Marine. Who do I have the pleasure of helping today?",
+      content: persona.greeting,
     },
   ]);
   const [input, setInput] = useState("");
@@ -55,6 +98,11 @@ const ChatBot = () => {
           message: userMessage, 
           history: messages,
           sessionId: sessionId,
+          persona: {
+            firstName: persona.firstName,
+            role: persona.role,
+            tagline: persona.tagline,
+          },
         },
       });
 
@@ -67,7 +115,7 @@ const ChatBot = () => {
       
       // Check if response is missing
       if (!data?.response) {
-        throw new Error("No response received from AI assistant");
+        throw new Error("No response received from the service team");
       }
 
       // Longer typing delay based on response length (more realistic)
@@ -95,7 +143,7 @@ const ChatBot = () => {
         ...prev,
         { 
           role: "assistant", 
-          content: "I apologize, but I'm experiencing technical difficulties. Please try again later or contact us directly at 845-787-4241 for immediate assistance." 
+          content: `I'm so sorry - something glitched on my end. If it's urgent, please call us at 845-787-4241 and we'll jump on it right away.` 
         },
       ]);
     } finally {
@@ -146,10 +194,10 @@ const ChatBot = () => {
                   <MessageCircle className="h-6 w-6 relative z-10 drop-shadow-md" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg drop-shadow-sm">AI Marine Assistant</h3>
+                  <h3 className="font-bold text-lg drop-shadow-sm">{persona.firstName} - J.D.F. Performance Marine</h3>
                   <p className="text-xs text-primary-foreground/90 flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                    Smart & Ready to Help
+                    {persona.tagline}
                   </p>
                 </div>
               </div>
@@ -183,7 +231,7 @@ const ChatBot = () => {
                       {message.role === "assistant" && (
                         <div className="flex items-center gap-2 mb-2 text-primary">
                           <Sparkles className="h-3 w-3" />
-                          <span className="text-xs font-semibold">AI Assistant</span>
+                          <span className="text-xs font-semibold">{persona.firstName}</span>
                         </div>
                       )}
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
@@ -195,7 +243,7 @@ const ChatBot = () => {
                     <div className="bg-gradient-to-br from-muted to-muted/80 border border-border/50 rounded-2xl p-4 shadow-md">
                       <div className="flex items-center gap-2 mb-2 text-primary">
                         <Sparkles className="h-3 w-3" />
-                        <span className="text-xs font-semibold">AI Assistant</span>
+                        <span className="text-xs font-semibold">{persona.firstName}</span>
                       </div>
                       <div className="flex gap-1.5">
                         <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -231,7 +279,7 @@ const ChatBot = () => {
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground mt-2 text-center">
-                Powered by intelligent AI • Real-time assistance
+                You're chatting with {persona.firstName} from J.D.F. Performance Marine.
               </p>
             </div>
           </div>
