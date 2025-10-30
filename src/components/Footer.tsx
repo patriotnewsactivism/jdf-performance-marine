@@ -61,7 +61,7 @@ const Footer = () => {
               <li>
                 <a
                   href="mailto:JDFperformancemarine@gmail.com"
-                  className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all group"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all group whitespace-nowrap"
                 >
                   <Mail className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   JDFperformancemarine@gmail.com
