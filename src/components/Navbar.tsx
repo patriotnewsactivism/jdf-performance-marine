@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+import { site } from "@/content/site";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,9 +43,9 @@ const Navbar = () => {
               </Link>
             ))}
             <Button asChild className="shadow-glow-orange">
-              <a href="tel:845-787-4241">
+              <a href={`tel:${site.phone.replace(/[^\d]/g, "")}`}>
                 <Phone className="w-4 h-4 mr-2" />
-                845-787-4241
+                {site.phone}
               </a>
             </Button>
           </div>
@@ -81,9 +82,9 @@ const Navbar = () => {
               </Link>
             ))}
             <Button asChild className="w-full">
-              <a href="tel:845-787-4241">
+              <a href={`tel:${site.phone.replace(/[^\d]/g, "")}`}>
                 <Phone className="w-4 h-4 mr-2" />
-                845-787-4241
+                {site.phone}
               </a>
             </Button>
           </div>

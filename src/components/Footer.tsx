@@ -1,5 +1,6 @@
 import { Phone, Mail, Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
+import { site } from "@/content/site";
 
 const Footer = () => {
   return (
@@ -8,13 +9,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="text-xl font-bold text-primary mb-4">J.D.F. Performance Marine</h3>
+            <h3 className="text-xl font-bold text-primary mb-4">{site.companyName}</h3>
             <p className="text-muted-foreground mb-4">
               Hudson Valley's trusted source for high-performance marine service with over 30 years of experience.
             </p>
-            <p className="text-sm text-muted-foreground">
-              New Windsor, NY
-            </p>
+            <p className="text-sm text-muted-foreground">{site.location}</p>
           </div>
 
           {/* Quick Links */}
@@ -50,31 +49,31 @@ const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="tel:845-787-4241"
+                  href={`tel:${site.phone.replace(/[^\d]/g, "")}`}
                   className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Phone className="w-4 h-4" />
-                  845-787-4241
+                  {site.phone}
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:JDFperformancemarine@gmail.com"
+                  href={`mailto:${site.email}`}
                   className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Mail className="w-4 h-4" />
-                  JDFperformancemarine@gmail.com
+                  {site.email}
                 </a>
               </li>
               <li>
                 <a
-                  href="https://www.instagram.com/jdf_marine"
+                  href={site.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
                 >
                   <Instagram className="w-4 h-4" />
-                  @jdf_marine
+                  {site.instagramHandle}
                 </a>
               </li>
             </ul>
