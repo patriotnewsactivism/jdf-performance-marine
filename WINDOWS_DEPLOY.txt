@@ -1,0 +1,39 @@
+==============================================================
+  FIX CHATBOT ON WINDOWS - FOLLOW THESE STEPS
+==============================================================
+
+STEP 1: Get Your Supabase Access Token
+---------------------------------------
+1. Go to: https://supabase.com/dashboard/account/tokens
+2. Click "Generate new token" 
+3. Give it a name like "deploy-token"
+4. Copy the token (starts with sbp_...)
+
+STEP 2: Get Your OpenAI API Key
+--------------------------------
+1. Go to: https://platform.openai.com/api-keys
+2. Click "+ Create new secret key"
+3. Copy the key (starts with sk-...)
+
+STEP 3: Run These PowerShell Commands
+--------------------------------------
+Copy and paste these ONE AT A TIME:
+
+# Set your access token (replace with YOUR actual token from step 1)
+$env:SUPABASE_ACCESS_TOKEN = "sbp_YOUR_ACTUAL_TOKEN_HERE"
+
+# Link to project
+npx supabase link --project-ref yqhfuupiffhejocltowt
+
+# Set your OpenAI key (replace with YOUR actual key from step 2)
+npx supabase secrets set OPENAI_API_KEY="sk-YOUR_ACTUAL_OPENAI_KEY_HERE"
+
+# Deploy the function
+npx supabase functions deploy marine-chat
+
+==============================================================
+IMPORTANT: 
+- Replace sbp_YOUR_ACTUAL_TOKEN_HERE with your real Supabase token
+- Replace sk-YOUR_ACTUAL_OPENAI_KEY_HERE with your real OpenAI key
+- Don't use the placeholder text!
+==============================================================
