@@ -5,17 +5,48 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
+
+function toGeminiContents(messages: ChatMessage[]) {
+  // Convert OpenAI-like messages to Gemini contents format
+  const system = messages.find((m) => m.role === "system");
+  const rest = messages.filter((m) => m.role !== "system");
+  const contents = rest.map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
+  const systemInstruction = system
+    ? { role: "system", parts: [{ text: system.content }] }
+    : undefined;
+  return { contents, systemInstruction } as const;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { message, history } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const payload = await req.json().catch(() => ({}));
+    const messageRaw = payload?.message;
+    const historyRaw = payload?.history;
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const message = typeof messageRaw === "string" ? messageRaw : "";
+    const historyArray: Array<{ role: string; content: string }> = Array.isArray(historyRaw)
+      ? historyRaw
+      : [];
+
+    const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+
+    if (!OPENAI_API_KEY && !GEMINI_API_KEY) {
+      return new Response(
+        JSON.stringify({
+          error:
+            "No AI provider configured. Set OPENAI_API_KEY or GEMINI_API_KEY as a Function secret and redeploy.",
+        }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const systemPrompt = `You are an intelligent, knowledgeable, and engaging AI assistant for J.D.F. Performance Marine, a premier high-performance marine service shop in New Windsor, NY on the beautiful Hudson River.
@@ -90,52 +121,75 @@ IMPORTANT: You're not just answering FAQs - you're an intelligent assistant who 
 
 Remember: You represent a premium, expert service with decades of experience. Be confident, knowledgeable, and genuinely helpful.`;
 
-    const messages = [
+    const messages: ChatMessage[] = [
       { role: "system", content: systemPrompt },
-      ...history.map((msg: { role: string; content: string }) => ({
-        role: msg.role,
-        content: msg.content,
+      ...historyArray.map((msg) => ({
+        role: (msg.role === "assistant" ? "assistant" : "user") as ChatMessage["role"],
+        content: String(msg.content ?? ""),
       })),
       { role: "user", content: message },
     ];
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: messages,
-        temperature: 0.7,
-        max_tokens: 500,
-      }),
-    });
+    let aiResponse = "";
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("AI API Error:", response.status, errorText);
-      throw new Error(`AI API request failed: ${response.status}`);
+    if (OPENAI_API_KEY) {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages,
+          temperature: 0.7,
+          max_tokens: 500,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("OpenAI API Error:", response.status, errorText);
+        throw new Error(`OpenAI request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      aiResponse = data?.choices?.[0]?.message?.content ?? "";
+    } else if (GEMINI_API_KEY) {
+      const { contents, systemInstruction } = toGeminiContents(messages);
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents,
+          systemInstruction,
+          generationConfig: { temperature: 0.7, maxOutputTokens: 500 },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Gemini API Error:", response.status, errorText);
+        throw new Error(`Gemini request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const parts = data?.candidates?.[0]?.content?.parts;
+      aiResponse = Array.isArray(parts)
+        ? parts.map((p: { text?: string }) => p?.text ?? "").join("")
+        : "";
     }
 
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
-
-    return new Response(
-      JSON.stringify({ response: aiResponse }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ response: aiResponse }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error in marine-chat function:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "An error occurred" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    const message = error instanceof Error ? error.message : "An error occurred";
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
