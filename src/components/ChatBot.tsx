@@ -44,7 +44,22 @@ const ChatBot = () => {
         body: { message: userMessage, history: messages },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw new Error(error.message || "Failed to invoke chat function");
+      }
+
+      // Check if the response contains an error from the edge function
+      if (data?.error) {
+        console.error("Edge function returned error:", data.error);
+        throw new Error(data.error);
+      }
+
+      // Check if response exists and is not empty
+      if (!data?.response) {
+        console.error("No response from AI:", data);
+        throw new Error("No response received from AI assistant");
+      }
 
       // Simulate typing delay for more natural feel
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -57,7 +72,16 @@ const ChatBot = () => {
     } catch (error) {
       console.error("Chat error:", error);
       setIsTyping(false);
-      toast.error("Sorry, I'm having trouble responding. Please try again.");
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      toast.error(`Sorry, I'm having trouble responding: ${errorMessage}`);
+      // Add error message to chat for better visibility
+      setMessages((prev) => [
+        ...prev,
+        { 
+          role: "assistant", 
+          content: "I apologize, but I'm experiencing technical difficulties. Please ensure the AI service is properly configured and try again." 
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }

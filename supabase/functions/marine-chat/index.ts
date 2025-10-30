@@ -155,6 +155,11 @@ Remember: You represent a premium, expert service with decades of experience. Be
 
       const data = await response.json();
       aiResponse = data?.choices?.[0]?.message?.content ?? "";
+      
+      if (!aiResponse || aiResponse.trim() === "") {
+        console.error("OpenAI returned empty response:", data);
+        throw new Error("OpenAI returned an empty response");
+      }
     } else if (GEMINI_API_KEY) {
       const { contents, systemInstruction } = toGeminiContents(messages);
       const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -179,6 +184,16 @@ Remember: You represent a premium, expert service with decades of experience. Be
       aiResponse = Array.isArray(parts)
         ? parts.map((p: { text?: string }) => p?.text ?? "").join("")
         : "";
+      
+      if (!aiResponse || aiResponse.trim() === "") {
+        console.error("Gemini returned empty response:", data);
+        throw new Error("Gemini returned an empty response");
+      }
+    }
+
+    // Final validation before sending response
+    if (!aiResponse || aiResponse.trim() === "") {
+      throw new Error("AI service returned an empty response");
     }
 
     return new Response(JSON.stringify({ response: aiResponse }), {
