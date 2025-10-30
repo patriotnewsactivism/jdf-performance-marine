@@ -98,3 +98,96 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom animations and effects */
+@layer utilities {
+  .shadow-glow-orange {
+    box-shadow: 0 0 20px hsl(var(--marine-orange) / 0.4), 0 0 40px hsl(var(--marine-orange) / 0.2);
+  }
+  
+  .shadow-glow-blue {
+    box-shadow: 0 0 20px hsl(var(--marine-blue) / 0.4), 0 0 40px hsl(var(--marine-blue) / 0.2);
+  }
+  
+  .text-gradient-orange-blue {
+    background: linear-gradient(135deg, hsl(var(--marine-orange)) 0%, hsl(var(--marine-blue)) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Water ripple effect */
+  @keyframes ripple {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  
+  .animate-ripple {
+    animation: ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+  
+  /* Smooth floating animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Shimmer effect for premium feel */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+  
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--marine-orange) / 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 3s infinite;
+  }
+  
+  /* Gradient backgrounds */
+  .bg-marine-gradient {
+    background: linear-gradient(135deg, hsl(var(--marine-blue)) 0%, hsl(var(--marine-dark)) 100%);
+  }
+  
+  .bg-marine-gradient-alt {
+    background: linear-gradient(135deg, hsl(var(--marine-orange)) 0%, hsl(var(--marine-blue)) 100%);
+  }
+  
+  /* Glass morphism effects */
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .glass-morphism-dark {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}

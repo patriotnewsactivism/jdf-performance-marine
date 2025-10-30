@@ -18,12 +18,12 @@ const Navbar = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a1a] backdrop-blur-md border-b border-border/20 shadow-md">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1a1a]/95 backdrop-blur-md border-b border-border/20 shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <img src={logo} alt="J.D.F. Performance Marine" className="h-16 w-auto" />
+          <Link to="/" className="flex items-center gap-3 group">
+            <img src={logo} alt="J.D.F. Performance Marine" className="h-16 w-auto transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -32,16 +32,17 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`text-base font-medium transition-colors hover:text-primary ${
+                className={`text-base font-medium transition-all relative group ${
                   isActive(link.path)
                     ? "text-primary"
-                    : "text-gray-200"
+                    : "text-gray-200 hover:text-primary"
                 }`}
               >
                 {link.name}
+                <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary transition-transform origin-left ${isActive(link.path) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
               </Link>
             ))}
-            <Button asChild className="shadow-glow-orange">
+            <Button asChild className="shadow-glow-orange hover:scale-105 transition-all">
               <a href="tel:845-787-4241">
                 <Phone className="w-4 h-4 mr-2" />
                 845-787-4241
