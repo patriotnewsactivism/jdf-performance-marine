@@ -645,12 +645,12 @@ Remember: You're ${persona.firstName}, a compassionate, knowledgeable human from
     // Save or update conversation in database for warm/hot leads
     if (leadQualification.score !== 'cold' || userInfo.email || userInfo.phone || userInfo.name) {
       try {
-        // Check if conversation exists
+        // Check if conversation exists (use maybeSingle to avoid error when not found)
         const { data: existingConvo } = await supabase
           .from('conversations')
           .select('id')
           .eq('session_id', sessionId)
-          .single();
+          .maybeSingle();
 
         const conversationData = {
           session_id: sessionId,
@@ -689,12 +689,12 @@ Remember: You're ${persona.firstName}, a compassionate, knowledgeable human from
           (leadQualification.score === 'hot' || (userInfo.email || userInfo.phone));
         
         if (shouldNotify) {
-          // Check if notification already sent
+          // Check if notification already sent (use maybeSingle to avoid error when not found)
           const { data: existingNotification } = await supabase
             .from('lead_notifications')
             .select('id')
             .eq('conversation_id', conversationId)
-            .single();
+            .maybeSingle();
 
           if (!existingNotification) {
             await sendLeadNotification(
