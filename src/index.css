@@ -217,8 +217,8 @@ All colors MUST be HSL.
     background-image: url("./assets/logo.png"); /* Use the logo from assets */
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 50rem; /* A large, fixed size for consistency */
-    opacity: 0.03; /* Very subtle, as requested */
+    background-size: 30rem; /* MODIFICATION: Was 50rem, now smaller */
+    opacity: 0.05; /* MODIFICATION: Was 0.03, now 5% */
     mix-blend-mode: lighten; /* This blends the logo's black background, making it invisible */
   }
 }
