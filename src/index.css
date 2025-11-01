@@ -1,7 +1,212 @@
-@layer utilities {
-  /* ... (your existing utilities) ... */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  /* ADD THIS NEW CLASS */
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 220 30% 98%;
+    --foreground: 220 20% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    --primary: 27 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 100% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 30% 95%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 30% 88%;
+    --input: 220 30% 88%;
+    --ring: 27 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Marine-specific design tokens */
+    --marine-orange: 27 100% 50%;
+    --marine-blue: 210 100% 45%;
+    --marine-dark: 220 40% 8%;
+    --marine-silver: 0 0% 85%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(220 40% 8%) 0%, hsl(210 100% 20%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 30% 98%) 100%);
+    --gradient-accent: linear-gradient(90deg, hsl(27 100% 50%) 0%, hsl(210 100% 45%) 100%);
+
+    /* Shadows */
+    --shadow-marine: 0 10px 40px -10px hsl(220 40% 8% / 0.3);
+    --shadow-glow-orange: 0 0 30px hsl(27 100% 50% / 0.3);
+    --shadow-glow-blue: 0 0 30px hsl(210 100% 45% / 0.3);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 220 40% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 220 35% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 220 35% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 27 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 100% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 30% 18%;
+    --muted-foreground: 220 10% 65%;
+
+    --accent: 210 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
+    --ring: 27 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom animations and effects */
+@layer utilities {
+  .shadow-glow-orange {
+    box-shadow: 0 0 20px hsl(var(--marine-orange) / 0.4),
+      0 0 40px hsl(var(--marine-orange) / 0.2);
+  }
+
+  .shadow-glow-blue {
+    box-shadow: 0 0 20px hsl(var(--marine-blue) / 0.4),
+      0 0 40px hsl(var(--marine-blue) / 0.2);
+  }
+
+  .text-gradient-orange-blue {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--marine-orange)) 0%,
+      hsl(var(--marine-blue)) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Water ripple effect */
+  @keyframes ripple {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  .animate-ripple {
+    animation: ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+  }
+
+  /* Smooth floating animation */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Shimmer effect for premium feel */
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--marine-orange) / 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 3s infinite;
+  }
+
+  /* Gradient backgrounds */
+  .bg-marine-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--marine-blue)) 0%,
+      hsl(var(--marine-dark)) 100%
+    );
+  }
+
+  .bg-marine-gradient-alt {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--marine-orange)) 0%,
+      hsl(var(--marine-blue)) 100%
+    );
+  }
+
+  /* Glass morphism effects */
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .glass-morphism-dark {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Watermark utility class */
   .bg-watermarked {
     @apply relative z-0 overflow-hidden; /* Establish stacking context and contain the pseudo-element */
   }
