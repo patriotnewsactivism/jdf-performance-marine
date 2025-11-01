@@ -2,8 +2,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
-// MODIFICATION: Import the new close-up image
+// MODIFICATION: Import all three new images
 import serviceCloseup from "@/assets/engine-supercharger-closeup.jpg";
+import heroImage from "@/assets/engine-triple-install.jpg"; // For the hero
+import serviceWork from "@/assets/engine-on-pallet.jpg"; // For the "Specializations" section
 
 const Services = () => {
   const services = [
@@ -50,19 +52,24 @@ const Services = () => {
 
   return (
     <div className="min-h-screen pt-20">
-      {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+      {/* MODIFICATION: Replaced the original hero with a new image-based hero */}
+      <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroImage})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
               Our Services
             </h1>
-            <p className="text-xl text-muted-foreground">
-              Comprehensive marine services from routine maintenance to
-              high-performance upgrades. Whether you need tune-ups or custom
-              race engine building, we deliver precision work backed by 30+
-              years of experience.
+            <p className="text-xl md:text-2xl text-gray-200 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+              From routine maintenance to full-scale performance builds, we
+              deliver precision work backed by over 30 years of expertise.
             </p>
           </div>
         </div>
@@ -106,11 +113,12 @@ const Services = () => {
             <h2 className="text-3xl font-bold mb-12 text-center">
               We Specialize In
             </h2>
+            {/* MODIFICATION: Changed to use 'serviceWork' (engine on pallet) for consistency with About page */}
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Image Column */}
               <div className="relative h-[400px] rounded-xl overflow-hidden shadow-xl">
                 <img
-                  src={serviceCloseup}
+                  src={serviceWork}
                   alt="High performance supercharger"
                   className="object-cover w-full h-full"
                 />
