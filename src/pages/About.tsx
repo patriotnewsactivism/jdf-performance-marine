@@ -31,8 +31,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* Main Content */}
-      <section className="py-20 bg-background">
+      {/* Main Content - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
             <div>
@@ -110,8 +110,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="py-20 bg-card">
+      {/* Stats - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-card bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
             {stats.map((stat, index) => (
@@ -132,8 +132,8 @@ const About = () => {
         </div>
       </section>
 
-      {/* What Sets Us Apart */}
-      <section className="py-20 bg-background">
+      {/* What Sets Us Apart - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-bold mb-12 text-center">
