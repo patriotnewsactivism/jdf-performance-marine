@@ -23,7 +23,15 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <img src={logo} alt="J.D.F. Performance Marine" className="h-16 w-auto transition-transform group-hover:scale-105" />
+            {/* MODIFICATION: 
+              Added 'mix-blend-lighten' to magically blend the logo's black 
+              background with the navbar's dark background. 
+            */}
+            <img
+              src={logo}
+              alt="J.D.F. Performance Marine"
+              className="h-16 w-auto transition-transform group-hover:scale-105 mix-blend-lighten"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -39,10 +47,19 @@ const Navbar = () => {
                 }`}
               >
                 {link.name}
-                <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary transition-transform origin-left ${isActive(link.path) ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'}`}></span>
+                <span
+                  className={`absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-primary to-secondary transition-transform origin-left ${
+                    isActive(link.path)
+                      ? "scale-x-100"
+                      : "scale-x-0 group-hover:scale-x-100"
+                  }`}
+                ></span>
               </Link>
             ))}
-            <Button asChild className="shadow-glow-orange hover:scale-105 transition-all">
+            <Button
+              asChild
+              className="shadow-glow-orange hover:scale-105 transition-all"
+            >
               <a href="tel:845-787-4241">
                 <Phone className="w-4 h-4 mr-2" />
                 845-787-4241
