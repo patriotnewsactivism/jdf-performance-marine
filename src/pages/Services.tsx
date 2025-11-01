@@ -68,8 +68,8 @@ const Services = () => {
         </div>
       </section>
 
-      {/* Services Grid */}
-      <section className="py-20 bg-background">
+      {/* Services Grid - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
             {services.map((serviceGroup, index) => (
@@ -99,8 +99,8 @@ const Services = () => {
         </div>
       </section>
 
-      {/* MODIFICATION: Updated Specializations section to include the new image */}
-      <section className="py-20 bg-card">
+      {/* MODIFICATION: Updated Specializations section - Added 'bg-watermarked' */}
+      <section className="py-20 bg-card bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold mb-12 text-center">
@@ -115,7 +115,7 @@ const Services = () => {
                   className="object-cover w-full h-full"
                 />
               </div>
-              
+
               {/* Content Column */}
               <div className="space-y-8">
                 <Card className="p-6 border-2 border-primary/20 hover:border-primary/50 hover:shadow-glow-orange transition-all duration-300 hover:-translate-y-2">
@@ -144,8 +144,8 @@ const Services = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-background">
+      {/* CTA - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">
             Ready to Schedule Service?
