@@ -31,7 +31,8 @@ const Services = () => {
       items: [
         "Mercury / MerCruiser Diagnostics",
         "Yamaha and Kawasaki Jetski 2 stroke / 4 stroke service, repair, and upgrades",
-        "Maintenance and Repairs (Impellers, Bellos, Transom Assemblies, Engine Alignments, etc.)",
+        // MODIFICATION: Corrected "Bellos" to "Bellows"
+        "Maintenance and Repairs (Impellers, Bellows, Transom Assemblies, Engine Alignments, etc.)",
       ],
     },
     {
