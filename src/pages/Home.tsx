@@ -87,8 +87,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-background">
+      {/* Features Section - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
@@ -109,8 +109,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* About Preview Section */}
-      <section className="py-20 bg-card">
+      {/* About Preview Section - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-card bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -147,8 +147,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services Preview */}
-      <section className="py-20 bg-background relative overflow-hidden">
+      {/* Services Preview - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background relative overflow-hidden bg-watermarked">
         <div className="absolute inset-0 bg-gradient-to-b from-muted/30 via-transparent to-transparent pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-12">
