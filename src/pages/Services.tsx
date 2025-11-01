@@ -2,9 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
-// MODIFICATION: Swapped the image imports for their new locations
-import serviceCloseup from "@/assets/engine-supercharger-closeup.jpg";
-import heroImage from "@/assets/engine-on-pallet.jpg"; // This is now the hero
+// MODIFICATION: No longer need 'serviceCloseup'
+import heroImage from "@/assets/engine-on-pallet.jpg"; // This is the hero
 
 const Services = () => {
   const services = [
@@ -31,7 +30,6 @@ const Services = () => {
       items: [
         "Mercury / MerCruiser Diagnostics",
         "Yamaha and Kawasaki Jetski 2 stroke / 4 stroke service, repair, and upgrades",
-        // MODIFICATION: Corrected "Bellos" to "Bellows"
         "Maintenance and Repairs (Impellers, Bellows, Transom Assemblies, Engine Alignments, etc.)",
       ],
     },
@@ -52,7 +50,7 @@ const Services = () => {
 
   return (
     <div className="min-h-screen pt-20">
-      {/* MODIFICATION: Hero section now uses the 'engine-on-pallet.jpg' image */}
+      {/* Hero section now uses the 'engine-on-pallet.jpg' image */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -75,7 +73,7 @@ const Services = () => {
         </div>
       </section>
 
-      {/* Services Grid - MODIFICATION: Added 'bg-watermarked' */}
+      {/* Services Grid */}
       <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
@@ -106,53 +104,43 @@ const Services = () => {
         </div>
       </section>
 
-      {/* MODIFICATION: Updated Specializations section - Added 'bg-watermarked' */}
+      {/* MODIFICATION: "We Specialize In" section - REMOVED image and grid */}
       <section className="py-20 bg-card bg-watermarked">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
+          {/* MODIFICATION: Changed to max-w-4xl */}
+          <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold mb-12 text-center">
               We Specialize In
             </h2>
-            {/* MODIFICATION: Image source is now the 'engine-supercharger-closeup.jpg' */}
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Image Column */}
-              <div className="relative h-[400px] rounded-xl overflow-hidden shadow-xl">
-                <img
-                  src={serviceCloseup}
-                  alt="High performance supercharger"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-
-              {/* Content Column */}
-              <div className="space-y-8">
-                <Card className="p-6 border-2 border-primary/20 hover:border-primary/50 hover:shadow-glow-orange transition-all duration-300 hover:-translate-y-2">
-                  <h3 className="text-xl font-bold mb-4 text-primary">
-                    MerCruiser & Mercury Racing
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Expert diagnostics, service, and performance upgrades for
-                    MerCruiser and Mercury Racing products. From routine
-                    maintenance to race-ready builds.
-                  </p>
-                </Card>
-                <Card className="p-6 border-2 border-secondary/20 hover:border-secondary/50 hover:shadow-glow-blue transition-all duration-300 hover:-translate-y-2">
-                  <h3 className="text-xl font-bold mb-4 text-secondary">
-                    Yamaha & Kawasaki Jet Skis
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Comprehensive 2-stroke and 4-stroke service, repair, and
-                    performance upgrades for Yamaha and Kawasaki personal
-                    watercraft.
-                  </p>
-                </Card>
-              </div>
+            {/* MODIFICATION: Removed grid/cols-2 layout and image div */}
+            {/* This div now holds the cards directly */}
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card className="p-6 border-2 border-primary/20 hover:border-primary/50 hover:shadow-glow-orange transition-all duration-300 hover:-translate-y-2">
+                <h3 className="text-xl font-bold mb-4 text-primary">
+                  MerCruiser & Mercury Racing
+                </h3>
+                <p className="text-muted-foreground">
+                  Expert diagnostics, service, and performance upgrades for
+                  MerCruiser and Mercury Racing products. From routine
+                  maintenance to race-ready builds.
+                </p>
+              </Card>
+              <Card className="p-6 border-2 border-secondary/20 hover:border-secondary/50 hover:shadow-glow-blue transition-all duration-300 hover:-translate-y-2">
+                <h3 className="text-xl font-bold mb-4 text-secondary">
+                  Yamaha & Kawasaki Jet Skis
+                </h3>
+                <p className="text-muted-foreground">
+                  Comprehensive 2-stroke and 4-stroke service, repair, and
+                  performance upgrades for Yamaha and Kawasaki personal
+                  watercraft.
+                </p>
+              </Card>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA - MODIFICATION: Added 'bg-watermarked' */}
+      {/* CTA */}
       <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">
