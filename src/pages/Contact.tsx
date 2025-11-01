@@ -10,16 +10,19 @@ const Contact = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-secondary/5 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">Get in Touch</h1>
+            <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              Get in Touch
+            </h1>
             <p className="text-xl text-muted-foreground">
-              Ready to get started? Contact us today for a quote or to discuss your marine service needs.
+              Ready to get started? Contact us today for a quote or to discuss
+              your marine service needs.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Information */}
-      <section className="py-20 bg-background">
+      {/* Contact Information - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {/* Phone */}
@@ -78,8 +81,8 @@ const Contact = () => {
         </div>
       </section>
 
-      {/* Location & Hours */}
-      <section className="py-20 bg-card">
+      {/* Location & Hours - MODIFICATION: Added 'bg-watermarked' */}
+      <section className="py-20 bg-card bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8">
@@ -94,9 +97,7 @@ const Contact = () => {
                 <p className="text-lg mb-4">
                   <strong>J.D.F. Performance Marine</strong>
                 </p>
-                <p className="text-muted-foreground mb-2">
-                  New Windsor, NY
-                </p>
+                <p className="text-muted-foreground mb-2">New Windsor, NY</p>
                 <p className="text-muted-foreground">
                   Located along the beautiful Hudson River
                 </p>
@@ -143,9 +144,12 @@ const Contact = () => {
       {/* CTA */}
       <section className="py-20 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">Ready to Experience Expert Service?</h2>
+          <h2 className="text-4xl font-bold mb-6">
+            Ready to Experience Expert Service?
+          </h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Contact J.D.F. Performance Marine today. We're here to help with all your high-performance marine service needs.
+            Contact J.D.F. Performance Marine today. We're here to help with all
+            your high-performance marine service needs.
           </p>
           <Button asChild size="lg" variant="secondary" className="text-lg">
             <a href="tel:845-787-4241">
