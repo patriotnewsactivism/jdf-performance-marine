@@ -2,10 +2,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
-// MODIFICATION: Import all three new images
+// MODIFICATION: Swapped the image imports for their new locations
 import serviceCloseup from "@/assets/engine-supercharger-closeup.jpg";
-import heroImage from "@/assets/engine-triple-install.jpg"; // For the hero
-import serviceWork from "@/assets/engine-on-pallet.jpg"; // For the "Specializations" section
+import heroImage from "@/assets/engine-on-pallet.jpg"; // This is now the hero
 
 const Services = () => {
   const services = [
@@ -52,7 +51,7 @@ const Services = () => {
 
   return (
     <div className="min-h-screen pt-20">
-      {/* MODIFICATION: Replaced the original hero with a new image-based hero */}
+      {/* MODIFICATION: Hero section now uses the 'engine-on-pallet.jpg' image */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -113,12 +112,12 @@ const Services = () => {
             <h2 className="text-3xl font-bold mb-12 text-center">
               We Specialize In
             </h2>
-            {/* MODIFICATION: Changed to use 'serviceWork' (engine on pallet) for consistency with About page */}
+            {/* MODIFICATION: Image source is now the 'engine-supercharger-closeup.jpg' */}
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Image Column */}
               <div className="relative h-[400px] rounded-xl overflow-hidden shadow-xl">
                 <img
-                  src={serviceWork}
+                  src={serviceCloseup}
                   alt="High performance supercharger"
                   className="object-cover w-full h-full"
                 />
