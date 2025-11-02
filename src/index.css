@@ -99,6 +99,22 @@ All colors MUST be HSL.
   }
 }
 
+/* ------------------------------------------------------ */
+/* 🔧 Global background image for the whole site (10% opacity) */
+/* ------------------------------------------------------ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("/src/assets/engine-triple-install.jpg") no-repeat center center / cover;
+  opacity: 0.10;        /* 10% opacity */
+  z-index: -1;          /* keep it behind everything */
+}
+
+body {
+  background-color: hsl(var(--background)); /* off-white base tone */
+}
+
 /* Custom animations and effects */
 @layer utilities {
   .shadow-glow-orange {
