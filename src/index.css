@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design tokens and global styles */
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
 @layer base {
   :root {
     --background: 220 30% 98%;
@@ -35,54 +38,51 @@
 
     --radius: 0.75rem;
 
-    /* Marine-specific tokens */
+    /* Marine-specific design tokens */
     --marine-orange: 27 100% 50%;
     --marine-blue: 210 100% 45%;
     --marine-dark: 220 40% 8%;
     --marine-silver: 0 0% 85%;
 
     /* Gradients */
-    --gradient-hero: linear-gradient(
-      135deg,
-      hsl(220 40% 8%) 0%,
-      hsl(210 100% 20%) 100%
-    );
-    --gradient-card: linear-gradient(
-      180deg,
-      hsl(0 0% 100%) 0%,
-      hsl(220 30% 98%) 100%
-    );
-    --gradient-accent: linear-gradient(
-      90deg,
-      hsl(27 100% 50%) 0%,
-      hsl(210 100% 45%) 100%
-    );
+    --gradient-hero: linear-gradient(135deg, hsl(220 40% 8%) 0%, hsl(210 100% 20%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(220 30% 98%) 100%);
+    --gradient-accent: linear-gradient(90deg, hsl(27 100% 50%) 0%, hsl(210 100% 45%) 100%);
 
     /* Shadows */
     --shadow-marine: 0 10px 40px -10px hsl(220 40% 8% / 0.3);
     --shadow-glow-orange: 0 0 30px hsl(27 100% 50% / 0.3);
     --shadow-glow-blue: 0 0 30px hsl(210 100% 45% / 0.3);
 
+    /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
     --background: 220 40% 8%;
     --foreground: 0 0% 98%;
+
     --card: 220 35% 12%;
     --card-foreground: 0 0% 98%;
+
     --popover: 220 35% 12%;
     --popover-foreground: 0 0% 98%;
+
     --primary: 27 100% 50%;
     --primary-foreground: 0 0% 100%;
+
     --secondary: 210 100% 45%;
     --secondary-foreground: 0 0% 100%;
+
     --muted: 220 30% 18%;
     --muted-foreground: 220 10% 65%;
+
     --accent: 210 100% 45%;
     --accent-foreground: 0 0% 100%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
+
     --border: 220 30% 20%;
     --input: 220 30% 20%;
     --ring: 27 100% 50%;
@@ -99,40 +99,8 @@
   }
 }
 
-/* ------------------------------------------------------ */
-/* 🌊 Global 20% opacity engine background image */
-/* ------------------------------------------------------ */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: url("/src/assets/engine-triple-install.jpg") no-repeat center center / cover;
-  opacity: 0.20;       /* 20% opacity background */
-  z-index: -1;
-}
-
-body {
-  background-color: hsl(var(--background)); /* off-white base tone */
-}
-
-/* ------------------------------------------------------ */
-/* Utility layer — cards & wrappers with opacity control  */
-/* ------------------------------------------------------ */
+/* Custom animations and effects */
 @layer utilities {
-  /* White opaque card surface */
-  .card-white {
-    background-color: hsl(var(--card));
-    opacity: 1;
-    @apply shadow-md rounded-lg;
-  }
-
-  /* Muted wrapper area at 60% opacity */
-  .wrapper-muted {
-    background-color: hsl(var(--muted));
-    opacity: 0.6;
-  }
-
-  /* Existing glow, gradient, and animation utilities */
   .shadow-glow-orange {
     box-shadow: 0 0 20px hsl(var(--marine-orange) / 0.4),
       0 0 40px hsl(var(--marine-orange) / 0.2);
@@ -154,6 +122,7 @@ body {
     -webkit-text-fill-color: transparent;
   }
 
+  /* Water ripple effect */
   @keyframes ripple {
     0% {
       transform: scale(1);
@@ -169,6 +138,7 @@ body {
     animation: ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
   }
 
+  /* Smooth floating animation */
   @keyframes float {
     0%,
     100% {
@@ -183,6 +153,7 @@ body {
     animation: float 3s ease-in-out infinite;
   }
 
+  /* Shimmer effect for premium feel */
   @keyframes shimmer {
     0% {
       background-position: -1000px 0;
@@ -203,6 +174,7 @@ body {
     animation: shimmer 3s infinite;
   }
 
+  /* Gradient backgrounds */
   .bg-marine-gradient {
     background: linear-gradient(
       135deg,
@@ -219,6 +191,7 @@ body {
     );
   }
 
+  /* Glass morphism effects */
   .glass-morphism {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
@@ -233,18 +206,19 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 
+  /* Watermark utility class */
   .bg-watermarked {
-    @apply relative z-0 overflow-hidden;
+    @apply relative z-0 overflow-hidden; /* Establish stacking context and contain the pseudo-element */
   }
 
   .bg-watermarked::before {
     content: "";
-    @apply absolute inset-0 z-[-1];
-    background-image: url("./assets/logo.png");
+    @apply absolute inset-0 z-[-1]; /* Position behind all content */
+    background-image: url("./assets/logo.png"); /* Use the logo from assets */
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 30rem;
-    opacity: 0.05;
-    mix-blend-mode: lighten;
+    background-size: 30rem; /* MODIFICATION: Was 50rem, now smaller */
+    opacity: 0.05; /* MODIFICATION: Was 0.03, now 5% */
+    mix-blend-mode: lighten; /* This blends the logo's black background, making it invisible */
   }
 }
