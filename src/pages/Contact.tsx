@@ -66,12 +66,12 @@ const Contact = () => {
               </div>
               <h3 className="text-xl font-bold mb-4">Follow Us</h3>
               <a
-                href="https://www.instagram.com/jdf_marine"
+                href="https://www.instagram.com/jdf_performance_marine"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-lg text-primary hover:underline block mb-2 font-semibold"
               >
-                @jdf_marine
+                @jdf_performance_marine
               </a>
               <p className="text-sm text-muted-foreground">
                 See our latest projects and updates
