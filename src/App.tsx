@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatBot from "./components/ChatBot";
+import ScrollToTop from './components/ScrollToTop';
 
 const queryClient = new QueryClient();
 
