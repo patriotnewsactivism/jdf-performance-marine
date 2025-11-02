@@ -69,7 +69,7 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="https://www.instagram.com/jdf_marine"
+                  href="https://www.instagram.com/jdf_performance_marine"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all group"
