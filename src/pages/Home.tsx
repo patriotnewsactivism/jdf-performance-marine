@@ -36,7 +36,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero section here */}
+      {/* Hero section */}
       <section className="wrapper-muted py-8">
         <div className="max-w-5xl mx-auto space-y-6">
           <div className="card-white p-6">
@@ -85,7 +85,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Features Section - MODIFICATION: Added 'bg-watermarked' */}
+      {/* Features */}
       <section className="py-20 bg-background bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
@@ -98,16 +98,14 @@ const Home = () => {
                   <feature.icon className="w-8 h-8 text-primary group-hover:scale-110 transition-transform" />
                 </div>
                 <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-                <p className="text-muted-foreground">
-                  {feature.description}
-                </p>
+                <p className="text-muted-foreground">{feature.description}</p>
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* About Preview Section - MODIFICATION: Added 'bg-watermarked' */}
+      {/* About Preview */}
       <section className="py-20 bg-card bg-watermarked">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -135,7 +133,6 @@ const Home = () => {
             </div>
             <div className="relative h-[400px] rounded-xl overflow-hidden shadow-xl">
               <img
-                // MODIFICATION: Image source is now the real engine on the pallet
                 src={serviceWork}
                 alt="Expert marine service"
                 className="object-cover w-full h-full"
@@ -145,7 +142,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Services Preview - MODIFICATION: Added 'bg-watermarked' */}
+      {/* Services Preview */}
       <section className="py-20 bg-background relative overflow-hidden bg-watermarked">
         <div className="absolute inset-0 bg-gradient-to-b from-muted/30 via-transparent to-transparent pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
@@ -185,7 +182,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA */}
       <section className="py-20 bg-gradient-to-r from-primary to-secondary text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-bold mb-6">Ready to Get Started?</h2>
@@ -216,20 +213,3 @@ const Home = () => {
 };
 
 export default Home;
-return (
-    <main>
-      {/* Hero section here */}
-
-      <section className="wrapper-muted py-8">
-        <div className="max-w-5xl mx-auto space-y-6">
-          <div className="card-white p-6">
-            <h2>Premium Performance Builds</h2>
-            <p>Precision marine tuning, upgrades, and installations.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Possibly more sections below */}
-    </main>
-  );
-
