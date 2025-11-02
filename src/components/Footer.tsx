@@ -75,7 +75,7 @@ const Footer = () => {
                   className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-all group"
                 >
                   <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  @jdf_marine
+                  @jdf_performance_marine
                 </a>
               </li>
             </ul>
