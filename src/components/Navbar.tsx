@@ -23,14 +23,10 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            {/* MODIFICATION: 
-              Added 'mix-blend-lighten' to magically blend the logo's black 
-              background with the navbar's dark background. 
-            */}
             <img
               src={logo}
               alt="J.D.F. Performance Marine"
-              className="h-16 w-auto transition-transform group-hover:scale-105 mix-blend-lighten"
+              className="h-20 w-auto transition-transform group-hover:scale-105 mix-blend-lighten"
             />
           </Link>
 
