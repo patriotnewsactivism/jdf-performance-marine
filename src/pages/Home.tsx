@@ -218,3 +218,20 @@ const Home = () => {
 };
 
 export default Home;
+return (
+    <main>
+      {/* Hero section here */}
+
+      <section className="wrapper-muted py-8">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <div className="card-white p-6">
+            <h2>Premium Performance Builds</h2>
+            <p>Precision marine tuning, upgrades, and installations.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Possibly more sections below */}
+    </main>
+  );
+
