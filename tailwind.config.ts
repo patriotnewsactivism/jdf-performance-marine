@@ -17,8 +17,8 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "absolute inset-0 bg-[url('/assets/engine-supercharger-closeup.jpg')] bg-cover bg-center opacity-10"
+        foreground: "hsl(var(foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
