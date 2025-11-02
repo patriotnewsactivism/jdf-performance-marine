@@ -82,13 +82,13 @@ const config: Config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      // Optional custom background utilities
       backgroundImage: {
-        "engine-supercharger":
-          "url('/src/assets/engine-supercharger-closeup.jpg')",
+        "engine-install": "url('/src/assets/engine-triple-install.jpg')",
       },
       opacity: {
         10: "0.10",
+        20: "0.20",
+        60: "0.60",
       },
     },
   },
