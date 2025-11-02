@@ -36,15 +36,13 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          // MODIFICATION: Image source is now the real triple-engine install
-          style={{ backgroundImage: `url(${heroBoat})` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+      {/* Hero section here */}
+      <section className="wrapper-muted py-8">
+        <div className="max-w-5xl mx-auto space-y-6">
+          <div className="card-white p-6">
+            <h2>Premium Performance Builds</h2>
+            <p>Precision marine tuning, upgrades, and installations.</p>
+          </div>
         </div>
 
         <div className="relative z-10 container mx-auto px-4">
