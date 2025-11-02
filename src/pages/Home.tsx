@@ -37,7 +37,7 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero section */}
-      <section className="wrapper-muted py-8">
+<section className="relative py-8 bg-cover bg-center" style={{ backgroundImage: `url(${heroBoat})` }}>
         <div className="max-w-5xl mx-auto space-y-6">
           <div className="card-white p-6">
             <h2>Premium Performance Builds</h2>
