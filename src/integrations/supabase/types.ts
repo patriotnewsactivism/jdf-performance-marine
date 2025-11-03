@@ -14,7 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_sessions: {
+        Row: {
+          id: string
+          created_at: string
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          id: string
+          created_at: string
+          session_id: string
+          role: "system" | "user" | "assistant"
+          content: string
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          session_id: string
+          role: "system" | "user" | "assistant"
+          content: string
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          session_id?: string
+          role?: "system" | "user" | "assistant"
+          content?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "chat_sessions"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      leads: {
+        Row: {
+          id: string
+          created_at: string
+          name: string | null
+          email: string | null
+          phone: string | null
+          message: string | null
+          source: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          name?: string | null
+          email?: string | null
+          phone?: string | null
+          message?: string | null
+          source?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          name?: string | null
+          email?: string | null
+          phone?: string | null
+          message?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
