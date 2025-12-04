@@ -134,42 +134,30 @@ function qualifyLead(messages: ChatMessage[], userInfo: UserInfo): LeadQualifica
   let score: "cold" | "warm" | "hot" = "cold";
   let notes = "";
   let requiresFollowUp = false;
-  
+
   // HOT LEAD: Critical issues (engine problems, breakdowns, etc.) are ALWAYS hot
   if (criticalCount >= 1) {
     score = "hot";
     notes = `🔥 URGENT: Customer has critical equipment issue requiring immediate attention. ${hasContactInfo ? 'Contact info collected.' : '⚠️ MISSING CONTACT INFO!'}`;
     requiresFollowUp = true;
   }
+  // HOT LEAD: Any clear service request or interest in their line of work should be treated as hot
+  else if (hotCount >= 1) {
+    score = "hot";
+    notes = `Customer is asking about core services with ${hotCount} strong intent signal${hotCount > 1 ? 's' : ''}. ${hasContactInfo ? 'Contact info collected.' : '⚠️ MISSING CONTACT INFO!'}`;
+    requiresFollowUp = true;
+  }
   // HOT LEAD: User confirmed interest (said "yes" after service discussion)
-  else if (confirmationCount >= 1 && hotCount >= 1) {
+  else if (confirmationCount >= 1 && warmCount >= 1) {
     score = "hot";
     notes = `🔥 Customer confirmed interest in service. ${hasContactInfo ? 'Contact info collected.' : '⚠️ MISSING CONTACT INFO!'}`;
     requiresFollowUp = true;
   }
-  // HOT LEAD: Multiple hot indicators with contact info
-  else if (hotCount >= 2 && hasContactInfo) {
-    score = "hot";
-    notes = `Customer expressing immediate interest with ${hotCount} strong buying signals. Has provided contact information.`;
-    requiresFollowUp = true;
-  }
-  // WARM LEAD: Service interest with contact info
-  else if (hotCount >= 1 && hasContactInfo) {
+  // WARM LEAD: Multiple warm indicators with or without contact info
+  else if (warmCount >= 1) {
     score = "warm";
-    notes = `Customer showing service interest. Has provided ${hasName ? 'name and ' : ''}contact details.`;
+    notes = `Customer researching services. ${hasContactInfo ? `Has provided ${hasName ? 'name and ' : ''}contact details.` : '⚠️ Contact info not collected yet - guide them to share it.'}`;
     requiresFollowUp = true;
-  }
-  // WARM LEAD: Multiple warm indicators with contact info
-  else if (warmCount >= 2 && hasContactInfo) {
-    score = "warm";
-    notes = `Customer researching services. Has provided ${hasName ? 'name and ' : ''}contact details.`;
-    requiresFollowUp = true;
-  }
-  // WARM LEAD: Showing interest but no contact info yet
-  else if (warmCount >= 1 || hotCount >= 1 || criticalCount >= 1) {
-    score = "warm";
-    notes = `Customer asking relevant questions. ⚠️ Contact info not collected yet - follow up in conversation!`;
-    requiresFollowUp = false;
   }
   // COLD LEAD: General browsing
   else {

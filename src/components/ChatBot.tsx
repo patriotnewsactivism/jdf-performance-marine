@@ -91,11 +91,14 @@ const ChatBot = () => {
     try {
       // Add a more human-like delay before "typing" starts (random between 800-1500ms)
       const initialDelay = 800 + Math.random() * 700;
-      await new Promise(resolve => setTimeout(resolve, initialDelay));
+      await new Promise((resolve) => setTimeout(resolve, initialDelay));
 
-      const { data, error } = await supabase.functions.invoke("marine-chat", {
-        body: { 
-          message: userMessage, 
+      const { data, error } = await supabase.functions.invoke<{
+        response?: string;
+        error?: string;
+      }>("marine-chat", {
+        body: {
+          message: userMessage,
           history: messages,
           sessionId: sessionId,
           persona: {
@@ -107,43 +110,54 @@ const ChatBot = () => {
       });
 
       if (error) throw error;
-      
-      // Check if the response contains an error
-      if (data?.error) {
-        throw new Error(data.error);
+
+      const responseText = data?.response?.trim();
+
+      if (!responseText) {
+        const fallbackMessage =
+          data?.error ??
+          "I'm sorry, I couldn't get a response from the service team just now. Please call 845-787-4241 and we'll jump on it right away.";
+        throw new Error(fallbackMessage);
       }
-      
-      // Check if response is missing
-      if (!data?.response) {
-        throw new Error("No response received from the service team");
+
+      if (data?.error) {
+        toast.warning("Using a backup response while we reconnect to the service team.");
       }
 
       // Longer typing delay based on response length (more realistic)
       // Average typing speed: ~40 words per minute for thoughtful responses
-      const wordCount = data.response.split(' ').length;
+      const wordCount = responseText.split(" ").length;
       const baseTypingTime = Math.min(wordCount * 150, 4000); // Cap at 4 seconds
       const randomVariation = Math.random() * 1000; // Add 0-1 second variation
       const typingDelay = baseTypingTime + randomVariation;
-      
-      await new Promise(resolve => setTimeout(resolve, typingDelay));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, typingDelay));
+
       setIsTyping(false);
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.response },
+        { role: "assistant", content: responseText },
       ]);
     } catch (error) {
       console.error("Chat error:", error);
       setIsTyping(false);
-      const errorMessage = error instanceof Error ? error.message : "Sorry, I'm having trouble responding. Please try again.";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Sorry, I'm having trouble responding. Please try again.";
       toast.error(errorMessage);
-      
-      // Add a fallback message to chat
+
+      // Add a fallback message to chat using the detailed error when available
+      const fallbackContent =
+        error instanceof Error && error.message
+          ? error.message
+          : `I'm so sorry - something glitched on my end. If it's urgent, please call us at 845-787-4241 and we'll jump on it right away.`;
+
       setMessages((prev) => [
         ...prev,
-        { 
-          role: "assistant", 
-          content: `I'm so sorry - something glitched on my end. If it's urgent, please call us at 845-787-4241 and we'll jump on it right away.` 
+        {
+          role: "assistant",
+          content: fallbackContent,
         },
       ]);
     } finally {
