@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
+import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
 interface Message {
@@ -141,17 +142,37 @@ const ChatBot = () => {
     } catch (error) {
       console.error("Chat error:", error);
       setIsTyping(false);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Sorry, I'm having trouble responding. Please try again.";
+
+      // Extract meaningful error message from Supabase function errors
+      let errorMessage = "Sorry, I'm having trouble responding. Please try again.";
+
+      if (error instanceof FunctionsHttpError) {
+        // Function returned a non-2xx status code
+        try {
+          const errorData = await error.context.json();
+          errorMessage = errorData?.error || errorData?.message || `Service error: ${error.message}`;
+          console.error("Function HTTP error details:", errorData);
+        } catch {
+          errorMessage = `Service error: ${error.message}`;
+        }
+      } else if (error instanceof FunctionsRelayError) {
+        // Relay error (e.g., function not found, timeout)
+        errorMessage = "Unable to connect to our service. Please try again or call us at 845-787-4241.";
+        console.error("Function relay error:", error.message);
+      } else if (error instanceof FunctionsFetchError) {
+        // Network error
+        errorMessage = "Network error. Please check your connection and try again.";
+        console.error("Function fetch error:", error.message);
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast.error(errorMessage);
 
-      // Add a fallback message to chat using the detailed error when available
-      const fallbackContent =
-        error instanceof Error && error.message
-          ? error.message
-          : `I'm so sorry - something glitched on my end. If it's urgent, please call us at 845-787-4241 and we'll jump on it right away.`;
+      // Add a fallback message to chat
+      const fallbackContent = errorMessage.includes("call us at")
+        ? errorMessage
+        : `I'm so sorry - something glitched on my end. If it's urgent, please call us at 845-787-4241 and we'll jump on it right away.`;
 
       setMessages((prev) => [
         ...prev,
