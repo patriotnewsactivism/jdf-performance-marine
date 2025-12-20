@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { Link } from "react-router-dom";
 // MODIFICATION: No longer need 'serviceCloseup'
-import heroImage from "@/assets/engine-on-pallet.jpg"; // This is the hero
+import heroImage from "@/assets/1766188002157.jpg"; // This is the hero
 
 const Services = () => {
   const services = [
@@ -50,7 +50,7 @@ const Services = () => {
 
   return (
     <div className="min-h-screen pt-20">
-      {/* Hero section now uses the 'engine-on-pallet.jpg' image */}
+      {/* Hero section now uses the '1766188002157.jpg' image */}
       <section className="relative h-[60vh] flex items-center justify-center overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
