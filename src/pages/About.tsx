@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Calendar, Award, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 // MODIFICATION: Import the new, real image
-import serviceWork from "@/assets/engine-on-pallet.jpg";
+import serviceWork from "@/assets/1766188002157.jpg";
 import { Helmet } from 'react-helmet-async';
 
 const About = () => {

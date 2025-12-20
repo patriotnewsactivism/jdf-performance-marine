@@ -4,7 +4,7 @@ import { Phone, Wrench, Zap, Shield, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 // MODIFICATION: Import the new, real images
 import heroBoat from "@/assets/engine-triple-install.jpg";
-import serviceWork from "@/assets/engine-on-pallet.jpg";
+import serviceWork from "@/assets/1766188002157.jpg";
 
 const Home = () => {
   const features = [
